@@ -32,26 +32,26 @@ const SuccessModal: React.FC<{
         initial={{ scale: 0.7, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.7, opacity: 0 }}
-        className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full text-center"
+        className="bg-white rounded-xl shadow-2xl p-4 max-w-sm w-full text-center"
       >
-        <CheckCircle className="mx-auto text-green-600 mb-4" size={64} />
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Registration Successful!</h2>
-        <p className="text-gray-600 mb-6">
+        <CheckCircle className="mx-auto text-green-600 mb-3" size={36} />
+        <h2 className="text-lg font-bold mb-3 text-gray-800">Registration Successful!</h2>
+        <p className="text-gray-600 mb-3 text-sm">
           Your account has been created successfully. 
           You can now sign in and start exploring.
         </p>
-        <div className="flex space-x-4 justify-center">
+        <div className="flex space-x-3 justify-center">
           <button 
             onClick={onClose}
-            className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-sm"
           >
             Close
           </button>
           <button 
             onClick={onSignIn}
-            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center"
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center text-sm"
           >
-            <LogIn className="mr-2" size={20} />
+            <LogIn className="mr-1" size={14} />
             Sign In
           </button>
         </div>
@@ -170,7 +170,7 @@ const SignupFormWithImage: React.FC = () => {
 
     return (
       <div>
-        <label className="block text-base font-semibold mb-3 text-gray-700">{label}</label>
+        <label className="block text-sm font-semibold mb-2 text-gray-700">{label}</label>
         <div className="relative">
           <input
             type={type === 'password' 
@@ -181,23 +181,23 @@ const SignupFormWithImage: React.FC = () => {
             value={formData[name] as string}
             onChange={handleInputChange}
             placeholder={`Enter your ${label.toLowerCase()}`}
-            className={`w-full px-5 py-3 pl-12 ${type === 'password' ? 'pr-16' : ''} text-base border-2 rounded-xl focus:outline-none transition-all duration-300 ${
+            className={`w-full px-4 py-2 pl-10 ${type === 'password' ? 'pr-12' : ''} text-sm border-2 rounded-lg focus:outline-none transition-all duration-300 ${
               error 
                 ? "border-red-500 bg-red-50" 
                 : "border-gray-300 focus:border-green-600"
             }`}
           />
-          <Icon className="absolute left-4 top-4 text-gray-500" size={20} />
+          <Icon className="absolute left-3 top-3 text-gray-500" size={16} />
           
           {type === 'password' && (
             <button
               type="button"
               onClick={() => togglePasswordVisibility(name as 'password' | 'confirmPassword')}
-              className="absolute right-4 top-4 text-gray-500 hover:text-green-600 transition-colors"
+              className="absolute right-3 top-3 text-gray-500 hover:text-green-600 transition-colors"
             >
               {showPassword[name as 'password' | 'confirmPassword'] 
-                ? <EyeOff size={20} /> 
-                : <Eye size={20} />
+                ? <EyeOff size={16} /> 
+                : <Eye size={16} />
               }
             </button>
           )}
@@ -208,7 +208,7 @@ const SignupFormWithImage: React.FC = () => {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="text-red-500 text-sm mt-2 pl-2"
+                className="text-red-500 text-xs mt-1 pl-1"
               >
                 {error}
               </motion.p>
@@ -220,38 +220,37 @@ const SignupFormWithImage: React.FC = () => {
   };
 
   const handleSignIn = () => {
-    // In a real application, this would navigate to the sign-in page
     alert('Navigate to Sign In Page');
   };
 
   return (
     <>
       <div className="min-h-screen flex">
-        {/* Left side - Background image */}
+        {/* Left side - Image */}
         <div
-          className="w-2/5 bg-cover bg-center hidden lg:block"
+          className="w-1/2 bg-cover bg-center hidden lg:block"
           style={{ backgroundImage: "url('/Arts.avif')" }}
         >
           <div className="h-full bg-black bg-opacity-50 flex items-center justify-center">
-            <h1 className="text-white text-3xl font-bold text-center p-6">
+            <h1 className="text-white text-xl font-bold text-center p-3">
               Create Your Account
             </h1>
           </div>
         </div>
 
-        {/* Right side form */}
-        <div className="w-full lg:w-3/5 bg-white py-16 px-4 flex items-center justify-center">
-          <div className="max-w-2xl w-full bg-gray-50 rounded-2xl p-12 shadow-xl">
-            <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">Sign Up</h2>
+        {/* Right side - Form */}
+        <div className="w-full lg:w-1/2 bg-white py-4 px-2 flex items-center justify-center">
+          <div className="max-w-md w-full bg-gray-50 rounded-xl p-6 shadow-lg">
+            <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Sign Up</h2>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {renderInputField("fullName", "Full Name", "text", User)}
               {renderInputField("email", "Email Address", "email", Mail)}
               {renderInputField("password", "Password", "password", Lock)}
               {renderInputField("confirmPassword", "Confirm Password", "password", Lock)}
               
               <div>
-                <label className="block text-base font-semibold mb-3 text-gray-700">Phone Number</label>
+                <label className="block text-sm font-semibold mb-2 text-gray-700">Phone Number</label>
                 <div className="relative">
                   <input
                     type="tel"
@@ -259,20 +258,20 @@ const SignupFormWithImage: React.FC = () => {
                     value={formData.phone}
                     onChange={handleInputChange}
                     placeholder="Enter your phone number"
-                    className={`w-full px-5 py-3 pl-12 text-base border-2 rounded-xl focus:outline-none transition-all duration-300 ${
+                    className={`w-full px-4 py-2 pl-10 text-sm border-2 rounded-lg focus:outline-none transition-all duration-300 ${
                       errors.phone 
                         ? "border-red-500 bg-red-50" 
                         : "border-gray-300 focus:border-green-600"
                     }`}
                   />
-                  <Phone className="absolute left-4 top-4 text-gray-500" size={20} />
+                  <Phone className="absolute left-3 top-3 text-gray-500" size={16} />
                   <AnimatePresence>
                     {errors.phone && (
                       <motion.p 
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="text-red-500 text-sm mt-2 pl-2"
+                        className="text-red-500 text-xs mt-1 pl-1"
                       >
                         {errors.phone}
                       </motion.p>
@@ -287,21 +286,21 @@ const SignupFormWithImage: React.FC = () => {
                   name="termsAccepted"
                   checked={formData.termsAccepted}
                   onChange={handleInputChange}
-                  className="h-4 w-4 text-green-600 focus:ring-2 rounded mr-2"
+                  className="h-3 w-3 text-green-600 focus:ring-2 rounded mr-2"
                 />
-                <label className="text-sm text-gray-700">I agree to the terms</label>
+                <label className="text-xs text-gray-700">I agree to the terms</label>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 text-base rounded-xl bg-green-600 text-white hover:bg-green-700 transition-all duration-300 flex justify-center items-center"
+                className="w-full py-2 text-sm rounded-lg bg-green-600 text-white hover:bg-green-700 transition-all duration-300 flex justify-center items-center"
               >
-                <UserPlus className="mr-2" size={20} />
+                <UserPlus className="mr-1" size={14} />
                 Register
               </button>
             </form>
 
-            <div className="text-center mt-6 text-sm text-gray-600">
+            <div className="text-center mt-4 text-xs text-gray-600">
               Already have an account? 
               <button 
                 onClick={handleSignIn}
