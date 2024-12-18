@@ -17,7 +17,7 @@ const AboutIntro: React.FC = () => {
       initial="hidden"
       animate="visible"
       transition={{ staggerChildren: 0.2 }}
-      className="flex flex-row justify-center items-center mx-16"
+      className="flex flex-row justify-center items-center mx-16 h-[100vh]"
     >
       {/* Left Section */}
       <motion.div
