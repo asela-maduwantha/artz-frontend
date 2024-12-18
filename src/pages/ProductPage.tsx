@@ -4,6 +4,7 @@ import ProductCategories from "../components/layout/ProductCategories";
 import Card from "../components/common/Card";
 import ProductDetailsDialog from "../components/layout/ProductDialog";
 
+
 // Sample product data
 const productData = [
   {
@@ -190,21 +191,25 @@ const ProductPage: React.FC = () => {
   return (
     <div>
       <Header />
-      <p className="text-xl font-semibold text-center mb-4">
+      {/* <p className="text-xl font-semibold text-center mb-4">
         Selected: {selectedCategory}
-      </p>
+      </p> */}
+      <div className="mt-5 my-7">
       <ProductCategories
         onCategoryChange={(category) => setSelectedCategory(category)}
       />
+      </div>
 
       {/* Map through filtered products and send each product to the Card component */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 m-6">
         {filterProducts().map((product) => (
+
           <Card
             key={product.id}
             product={product}
             onClick={() => handleCardClick(product)}
           />
+
         ))}
       </div>
 

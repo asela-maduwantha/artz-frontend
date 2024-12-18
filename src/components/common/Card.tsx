@@ -1,5 +1,7 @@
 import React from "react";
-import { AiOutlineHeart } from "react-icons/ai"; // Importing a heart icon from react-icons
+import { motion, useAnimation } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import Heart from "./Heart_wishlist";
 
 // Define the type of the product prop expected in the Card component
 interface Product {
@@ -16,31 +18,54 @@ interface CardProps {
 }
 
 const Card: React.FC<CardProps> = ({ product, onClick }) => {
+  const controls = useAnimation(); // Framer Motion controls for animation
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 }); // Trigger animation when 20% of the card is visible
+
+  // Trigger animation when the card is in view
+  React.useEffect(() => {
+    if (inView) {
+      controls.start("visible");
+    }
+  }, [inView, controls]);
+
+  // Framer Motion animation variants
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md relative" onClick={onClick}>
-      {/* Image with fixed size */}
-      <img
-        src={product.image_path}
-        alt={product.name}
-        className="w-full h-48 object-cover rounded-t-lg"
-      />
-      
-      <div className="p-2">
-        {/* Name on left under image */}
+    <motion.div
+      ref={ref} // Attach the ref for inView tracking
+      initial="hidden"
+      animate={controls}
+      variants={cardVariants}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="bg-white rounded-lg shadow-md relative cursor-pointer w-full h-full"
+      onClick={onClick}
+      whileHover={{ scale: 1.005 }} // Subtle hover effect
+    >
+      {/* Image occupying 5/3 of the height */}
+      <div className="h-5/3 w-full">
+        <img
+          src={product.image_path}
+          alt={product.name}
+          className="w-full h-full object-cover rounded-t-lg"
+        />
+      </div>
+
+      {/* Details occupying 5/2 of the height */}
+      <div className="h-5/2 w-full flex flex-col justify-between p-2">
         <h2 className="text-lg font-bold">{product.name}</h2>
-
-        {/* Description left */}
         <p className="text-sm text-gray-600 mt-2">{product.description}</p>
-
-        {/* Price left */}
         <p className="text-xl font-semibold text-green-600 mt-2">{product.price}</p>
       </div>
 
       {/* Heart icon for wishlist at bottom right */}
       <div className="absolute bottom-4 right-4">
-        <AiOutlineHeart className="text-2xl cursor-pointer hover:text-red-500" />
+        <Heart />
       </div>
-    </div>
+    </motion.div>
   );
 };
 
