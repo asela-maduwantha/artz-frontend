@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { ShoppingCart, Leaf, Tag, Shield, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Leaf, Tag, Shield, ChevronLeft, ChevronRight, Sparkles, TreeDeciduousIcon, Coffee, Zap, BookOpen, Droplet, Feather, Paintbrush, PenTool, Scissors, ShieldCheck, Smile } from 'lucide-react';
 
 // Type Definitions
 type Feature = {
@@ -25,7 +25,7 @@ const products: Product[] = [
     id: 1,
     name: "Eco-Friendly Wood Craft Box",
     description: "Sustainable handmade wooden gift box",
-    image: "/api/placeholder/600/400",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWlwmb0M-smdzt3hBlygIIJoIUldb6AmbfxQ&s",
     bgColor: "from-amber-50 to-green-50",
     price: "$49.99",
     features: [
@@ -46,8 +46,108 @@ const products: Product[] = [
       }
     ]
   },
-  // ... other products remain the same
+  {
+    id: 2,
+    name: "Handwoven Boho Wall Hanging",
+    description: "Intricate macrame wall decor for cozy spaces",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9-ah7tXzv14kDm_pkiIrxVfKSMAbgQHFgUQ&s",
+    bgColor: "from-pink-50 to-yellow-50",
+    price: "$35.99",
+    features: [
+      {
+        icon: <Feather className="text-pink-600" />,
+        title: "Lightweight",
+        description: "Adds charm without weighing down your walls"
+      },
+      {
+        icon: <Scissors className="text-yellow-600" />,
+        title: "Handcrafted",
+        description: "Lovingly woven by skilled artisans"
+      },
+      {
+        icon: <Smile className="text-orange-600" />,
+        title: "Warm Ambiance",
+        description: "Creates a welcoming and cozy environment"
+      }
+    ]
+  },
+  {
+    id: 3,
+    name: "Ceramic Artisan Vase",
+    description: "Handcrafted ceramic vase with a modern design",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSrt7Gaqej0wZGM8juuBe124M4kE4Fhk3W2w&s",
+    bgColor: "from-blue-50 to-gray-50",
+    price: "$79.99",
+    features: [
+      {
+        icon: <Droplet className="text-blue-600" />,
+        title: "Waterproof",
+        description: "Perfect for fresh or dried floral arrangements"
+      },
+      {
+        icon: <Paintbrush className="text-red-600" />,
+        title: "Unique Finish",
+        description: "Each vase features a one-of-a-kind hand-painted pattern"
+      },
+      {
+        icon: <ShieldCheck className="text-green-600" />,
+        title: "Durable",
+        description: "Fired at high temperatures for long-lasting quality"
+      }
+    ]
+  },
+  {
+    id: 4,
+    name: "Hand-Stitched Leather Notebook",
+    description: "Premium leather-bound notebook for journaling",
+    image: "/api/placeholder/600/400",
+    bgColor: "from-brown-50 to-yellow-50",
+    price: "$59.99",
+    features: [
+      {
+        icon: <PenTool className="text-yellow-600" />,
+        title: "Elegant Design",
+        description: "Classic leather cover with fine stitching"
+      },
+      {
+        icon: <BookOpen className="text-brown-600" />,
+        title: "Refillable Pages",
+        description: "Eco-friendly with replaceable paper inserts"
+      },
+      {
+        icon: <Zap className="text-red-600" />,
+        title: "Perfect Gift",
+        description: "Ideal for writers, artists, and thinkers"
+      }
+    ]
+  },
+  {
+    id: 5,
+    name: "Hand-Carved Wooden Coasters",
+    description: "Set of 4 handcrafted wooden coasters with intricate designs",
+    image: "/api/placeholder/600/400",
+    bgColor: "from-amber-50 to-teal-50",
+    price: "$29.99",
+    features: [
+      {
+        icon: <Coffee className="text-brown-600" />,
+        title: "Functional Beauty",
+        description: "Protects surfaces while adding style"
+      },
+      {
+        icon: <TreeDeciduousIcon className="text-green-600" />,
+        title: "Sustainable Materials",
+        description: "Made from responsibly sourced wood"
+      },
+      {
+        icon: <Sparkles className="text-teal-600" />,
+        title: "Artisan Quality",
+        description: "Meticulously hand-carved for a premium look"
+      }
+    ]
+  }
 ];
+
 
 const HeroSection: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
