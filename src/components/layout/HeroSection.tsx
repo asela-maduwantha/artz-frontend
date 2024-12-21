@@ -35,15 +35,161 @@ type Product = {
   customization_options: CustomizationOption[];
 };
 
+// Customization Panel Component
+const CustomizationPanel: React.FC<{
+  options: CustomizationOption[];
+  onClose: () => void;
+}> = ({ options, onClose }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: 20 }}
+    className="absolute top-0 right-0 bg-white rounded-lg shadow-xl p-6 w-96 z-20"
+  >
+    <div className="flex justify-between items-center mb-4">
+      <h3 className="text-xl font-bold">Customize Your Product</h3>
+      <button 
+        onClick={onClose} 
+        className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+      >
+        ×
+      </button>
+    </div>
+    <div className="space-y-4">
+      {options.map((option) => (
+        <div key={option.id} className="space-y-2">
+          <label className="block font-medium">
+            {option.name}
+            {option.is_required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+          {option.type === 'text' ? (
+            <input
+              type="text"
+              maxLength={option.max_value}
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-green-500"
+              placeholder={`Enter ${option.name.toLowerCase()}`}
+            />
+          ) : (
+            <select className="w-full p-2 border rounded focus:ring-2 focus:ring-green-500">
+              <option value="">Select {option.name}</option>
+              {option.available_values.map((value, index) => (
+                <option key={index} value={value}>{value}</option>
+              ))}
+            </select>
+          )}
+          {option.additional_price > 0 && (
+            <p className="text-sm text-gray-600">+${option.additional_price.toFixed(2)}</p>
+          )}
+        </div>
+      ))}
+    </div>
+    <button className="w-full mt-6 bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition">
+      Apply Customization
+    </button>
+  </motion.div>
+);
+
+// Product Detail Section Component
+const ProductDetailSection: React.FC<{
+  currentProduct: Product;
+}> = ({ currentProduct }) => {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+
+  const leftFeatureX = useTransform(scrollYProgress, [0.2, 0.5], [-100, 0]);
+  const rightFeatureX = useTransform(scrollYProgress, [0.2, 0.5], [100, 0]);
+  const featureOpacity = useTransform(scrollYProgress, [0.2, 0.5], [0, 1]);
+
+  const midPoint = Math.ceil(currentProduct.features.length / 2);
+  const leftFeatures = currentProduct.features.slice(0, midPoint);
+  const rightFeatures = currentProduct.features.slice(midPoint);
+
+  return (
+    <div 
+      ref={ref} 
+      className="min-h-screen flex items-center justify-center bg-gray-50 py-16 px-4"
+    >
+      <div className="max-w-6xl mx-auto flex items-center space-x-8">
+        <motion.div 
+          style={{
+            x: leftFeatureX,
+            opacity: featureOpacity
+          }}
+          className="w-1/3 space-y-6"
+        >
+          {leftFeatures.map((feature) => (
+            <div 
+              key={feature.id} 
+              className="bg-white p-6 rounded-lg shadow-md flex items-start space-x-4"
+            >
+              <div className="flex-shrink-0 text-2xl">{feature.icon}</div>
+              <div>
+                <h3 className="text-xl font-semibold">{feature.tag}</h3>
+                <p className="text-gray-600">{feature.description}</p>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div 
+          style={{
+            scale: useTransform(scrollYProgress, [0.2, 0.5], [0.8, 1]),
+            opacity: useTransform(scrollYProgress, [0.2, 0.5], [0.5, 1])
+          }}
+          className="w-1/3 flex justify-center"
+        >
+          <img 
+            src={currentProduct.img_url}
+            alt={currentProduct.name}
+            className="rounded-xl shadow-2xl object-cover w-full aspect-square"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = "/api/placeholder/600/400";
+            }}
+          />
+        </motion.div>
+
+        <motion.div 
+          style={{
+            x: rightFeatureX,
+            opacity: featureOpacity
+          }}
+          className="w-1/3 space-y-6"
+        >
+          {rightFeatures.map((feature) => (
+            <div 
+              key={feature.id} 
+              className="bg-white p-6 rounded-lg shadow-md flex items-start space-x-4"
+            >
+              <div className="flex-shrink-0 text-2xl">{feature.icon}</div>
+              <div>
+                <h3 className="text-xl font-semibold">{feature.tag}</h3>
+                <p className="text-gray-600">{feature.description}</p>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+// Main Hero Section Component
 const HeroSection: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [showCustomization, setShowCustomization] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('https://usha-arts-fmhwhcc4hka4h3ce.eastasia-01.azurewebsites.net/products'); // Replace with your API endpoint
+        const response = await axios.get('https://usha-arts-fmhwhcc4hka4h3ce.eastasia-01.azurewebsites.net/products');
         setProducts(response.data);
         setLoading(false);
       } catch (error) {
@@ -54,6 +200,17 @@ const HeroSection: React.FC = () => {
 
     fetchProducts();
   }, []);
+
+  // Auto-slide functionality
+  useEffect(() => {
+    if (isHovered || showCustomization || products.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % products.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [products.length, isHovered, showCustomization]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % products.length);
@@ -78,10 +235,8 @@ const HeroSection: React.FC = () => {
 
   return (
     <div className="relative">
-      {/* Hero Slider */}
       <div className={`bg-gradient-to-r ${bgColorClass} py-16 px-4 transition-all duration-500`}>
         <div className="max-w-6xl mx-auto flex items-center relative">
-          {/* Text Content */}
           <div className="w-1/2 pr-8 z-10">
             <motion.h1 
               key={`title-${currentSlide}`}
@@ -111,7 +266,7 @@ const HeroSection: React.FC = () => {
               exit={{ opacity: 0, y: -20 }}
               className="text-2xl font-bold mb-6"
             >
-              ${currentProduct.price}
+              ${currentProduct.price.toFixed(2)}
             </motion.div>
             
             <div className="flex space-x-4">
@@ -119,15 +274,21 @@ const HeroSection: React.FC = () => {
                 <ShoppingCart className="mr-2" /> Add to Cart
               </button>
               {currentProduct.is_customizable && (
-                <button className="border border-green-600 text-green-600 px-6 py-3 rounded-full hover:bg-green-50 transition flex items-center">
+                <button 
+                  onClick={() => setShowCustomization(!showCustomization)}
+                  className="border border-green-600 text-green-600 px-6 py-3 rounded-full hover:bg-green-50 transition flex items-center"
+                >
                   <Settings className="mr-2" /> Customize
                 </button>
               )}
             </div>
           </div>
 
-          {/* Image Section */}
-          <div className="w-1/2 overflow-hidden">
+          <div 
+            className="w-1/2 overflow-hidden relative"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
             <AnimatePresence mode="wait">
               <motion.img
                 key={`img-${currentSlide}`}
@@ -144,123 +305,37 @@ const HeroSection: React.FC = () => {
                 }}
               />
             </AnimatePresence>
+
+            {products.length > 1 && (
+              <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 flex justify-between px-4">
+                <button 
+                  onClick={prevSlide}
+                  className="bg-black/20 hover:bg-black/40 text-white rounded-full p-2 transition backdrop-blur-sm"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button 
+                  onClick={nextSlide}
+                  className="bg-black/20 hover:bg-black/40 text-white rounded-full p-2 transition backdrop-blur-sm"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Slider Navigation */}
-          {products.length > 1 && (
-            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 flex justify-between w-full">
-              <button 
-                onClick={prevSlide}
-                className="bg-white/50 hover:bg-white/75 rounded-full p-2 transition"
-              >
-                <ChevronLeft />
-              </button>
-              <button 
-                onClick={nextSlide}
-                className="bg-white/50 hover:bg-white/75 rounded-full p-2 transition"
-              >
-                <ChevronRight />
-              </button>
-            </div>
-          )}
+          <AnimatePresence>
+            {showCustomization && (
+              <CustomizationPanel 
+                options={currentProduct.customization_options}
+                onClose={() => setShowCustomization(false)}
+              />
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
-      {/* Product Details Section */}
       <ProductDetailSection currentProduct={currentProduct} />
-    </div>
-  );
-};
-
-type ProductDetailSectionProps = {
-  currentProduct: Product;
-};
-
-const ProductDetailSection: React.FC<ProductDetailSectionProps> = ({ currentProduct }) => {
-  const ref = React.useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const leftFeatureX = useTransform(scrollYProgress, [0.2, 0.5], [-100, 0]);
-  const rightFeatureX = useTransform(scrollYProgress, [0.2, 0.5], [100, 0]);
-  const featureOpacity = useTransform(scrollYProgress, [0.2, 0.5], [0, 1]);
-
-  // Split features into two groups for left and right sides
-  const midPoint = Math.ceil(currentProduct.features.length / 2);
-  const leftFeatures = currentProduct.features.slice(0, midPoint);
-  const rightFeatures = currentProduct.features.slice(midPoint);
-
-  return (
-    <div 
-      ref={ref} 
-      className="min-h-screen flex items-center justify-center bg-gray-50 py-16 px-4"
-    >
-      <div className="max-w-6xl mx-auto flex items-center space-x-8">
-        {/* Left Features */}
-        <motion.div 
-          style={{
-            x: leftFeatureX,
-            opacity: featureOpacity
-          }}
-          className="w-1/3 space-y-6"
-        >
-          {leftFeatures.map((feature: Feature) => (
-            <div 
-              key={feature.id} 
-              className="bg-white p-6 rounded-lg shadow-md flex items-start space-x-4"
-            >
-              <div className="flex-shrink-0 text-2xl">{feature.icon}</div>
-              <div>
-                <h3 className="text-xl font-semibold">{feature.tag}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
-            </div>
-          ))}
-        </motion.div>
-
-        {/* Central Image */}
-        <motion.div 
-          style={{
-            scale: useTransform(scrollYProgress, [0.2, 0.5], [0.8, 1]),
-            opacity: useTransform(scrollYProgress, [0.2, 0.5], [0.5, 1])
-          }}
-          className="w-1/3 flex justify-center"
-        >
-          <img 
-            src={currentProduct.img_url}
-            alt={currentProduct.name}
-            className="rounded-xl shadow-2xl object-cover w-full aspect-square"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = "/api/placeholder/600/400";
-            }}
-          />
-        </motion.div>
-
-        {/* Right Features */}
-        <motion.div 
-          style={{
-            x: rightFeatureX,
-            opacity: featureOpacity
-          }}
-          className="w-1/3 space-y-6"
-        >
-          {rightFeatures.map((feature: Feature) => (
-            <div 
-              key={feature.id} 
-              className="bg-white p-6 rounded-lg shadow-md flex items-start space-x-4"
-            >
-              <div className="flex-shrink-0 text-2xl">{feature.icon}</div>
-              <div>
-                <h3 className="text-xl font-semibold">{feature.tag}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
-            </div>
-          ))}
-        </motion.div>
-      </div>
     </div>
   );
 };
