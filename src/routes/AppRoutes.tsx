@@ -8,6 +8,9 @@ import SignupFormWithImage from '../components/signup/UserSignupForm';
 import AdminLayout from '../components/layout/AdminLayout';
 import Product from '../components/Admin/Product';
 import ProductDisplay from '../components/Admin/ProductDisplay';
+import ContactsPage from '../pages/ContactsPage';
+import AboutPage from '../pages/AboutPage';
+import ProductPage from '../pages/ProductPage';
 
 
 
@@ -21,6 +24,10 @@ const AppRoutes: React.FC = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginForm/>} />
             <Route path="/signup" element={<SignupFormWithImage/>} />
+            <Route path="/contact" element={<ContactsPage/>} />
+            <Route path="/about" element={<AboutPage/>} />
+            <Route path="/shop" element={<ProductPage/>} />
+
             <Route path="/admin" element={<AdminLayout/>} >
             <Route path="product" element={< Product/>} />
             <Route path="allproduct" element={< ProductDisplay/>} />

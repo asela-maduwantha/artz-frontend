@@ -67,25 +67,25 @@ const AdminLayout = () => {
   return (
     <div className="min-h-screen flex flex-col bg-stone-50">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-emerald-700 text-white py-3 px-4 shadow-lg">
+      <header className="sticky top-0 z-40 bg-green-700 text-white py-3 px-4 shadow-lg">
         <div className="flex justify-between items-center max-w-7xl mx-auto">
           <div className="flex items-center space-x-3">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="lg:hidden p-2 hover:bg-emerald-600 rounded-lg transition-colors"
+              className="lg:hidden p-2 hover:bg-green-600 rounded-lg transition-colors"
               aria-label="Toggle menu"
               aria-expanded={isSidebarOpen}
             >
               {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
             <div className="flex items-center space-x-2">
-              <Leaf className="text-emerald-300" />
+              <Leaf className="text-green-300" />
               <h1 className="text-xl font-semibold">ArtsbyUsha Admin</h1>
             </div>
           </div>
           
           <div className="flex items-center space-x-2">
-            <button className="flex items-center space-x-2 px-3 py-2 hover:bg-emerald-600 rounded-lg transition-colors">
+            <button className="flex items-center space-x-2 px-3 py-2 hover:bg-green-600 rounded-lg transition-colors">
               <User size={18} />
               <span className="hidden sm:inline">Profile</span>
             </button>
@@ -112,7 +112,7 @@ const AdminLayout = () => {
         <nav 
           className={`
             fixed lg:static inset-y-0 left-0 
-            w-64 bg-white border-r border-emerald-100 shadow-lg
+            w-64 bg-white border-r border-green-100 shadow-lg
             transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
             lg:transform-none transition-transform duration-200 ease-in-out
             z-40 lg:z-0 overflow-y-auto
@@ -131,8 +131,8 @@ const AdminLayout = () => {
                       flex items-center space-x-3 px-4 py-3 rounded-lg
                       transition-colors duration-200
                       ${isActiveRoute(item.path)
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-600'
+                        ? 'bg-green-100 text-green-700'
+                        : 'text-gray-600 hover:bg-green-50 hover:text-green-600'
                       }
                     `}
                   >
@@ -144,11 +144,11 @@ const AdminLayout = () => {
             </div>
 
             {/* Environment Impact Stats */}
-            <div className="mt-auto p-4 bg-emerald-50 rounded-lg">
-              <h3 className="text-sm font-semibold text-emerald-700 mb-2">
+            <div className="mt-auto p-4 bg-green-50 rounded-lg">
+              <h3 className="text-sm font-semibold text-green-700 mb-2">
                 Today's Impact
               </h3>
-              <div className="space-y-2 text-sm text-emerald-600">
+              <div className="space-y-2 text-sm text-green-600">
                 <div className="flex justify-between">
                   <span>CO₂ Saved</span>
                   <span className="font-medium">24.5 kg</span>

@@ -40,18 +40,18 @@ const Header = () => {
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            <a href="#" className="text-gray-800 hover:text-green-600 transition-colors duration-200">
+            <Link to='/' className="text-gray-800 hover:text-green-600 transition-colors duration-200">
               Home
-            </a>
-            <a href="#" className="text-gray-800 hover:text-green-600 transition-colors duration-200">
+            </Link>
+            <Link to="/shop" className="text-gray-800 hover:text-green-600 transition-colors duration-200">
               Products
-            </a>
-            <a href="#" className="text-gray-800 hover:text-green-600 transition-colors duration-200">
+            </Link>
+            <Link to="/about" className="text-gray-800 hover:text-green-600 transition-colors duration-200">
               About
-            </a>
-            <a href="#" className="text-gray-800 hover:text-green-600 transition-colors duration-200">
+            </Link>
+            <Link to="/contact" className="text-gray-800 hover:text-green-600 transition-colors duration-200">
               Contact
-            </a>
+            </Link>
           </nav>
 
           {/* Desktop Auth Buttons */}
