@@ -1,56 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { ShoppingCart, Leaf, Tag, Shield, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import axios from 'axios';
 
 // Type Definitions
 type Feature = {
-  icon: React.ReactNode;
-  title: string;
+  id: number;
+  tag: string;
   description: string;
+  icon: string;
+};
+
+type CustomizationOption = {
+  id: number;
+  name: string;
+  type: string;
+  available_values: string[];
+  min_value: number;
+  max_value: number;
+  additional_price: number;
+  is_required: boolean;
 };
 
 type Product = {
   id: number;
   name: string;
   description: string;
-  image: string;
-  bgColor: string;
-  price: string;
+  img_url: string;
+  price: number;
+  category: string;
+  is_customizable: boolean;
+  is_active: boolean;
   features: Feature[];
+  customization_options: CustomizationOption[];
 };
 
-// Dummy product data
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Eco-Friendly Wood Craft Box",
-    description: "Sustainable handmade wooden gift box",
-    image: "/api/placeholder/600/400",
-    bgColor: "from-amber-50 to-green-50",
-    price: "$49.99",
-    features: [
-      {
-        icon: <Leaf className="text-green-600" />,
-        title: "Eco-Friendly",
-        description: "Made from 100% sustainable bamboo wood"
-      },
-      {
-        icon: <Tag className="text-blue-600" />,
-        title: "Affordable Luxury",
-        description: "Premium quality at an accessible price point"
-      },
-      {
-        icon: <Shield className="text-purple-600" />,
-        title: "Durable Design",
-        description: "Crafted to last with high-quality materials"
-      }
-    ]
-  },
-  // ... other products remain the same
-];
-
 const HeroSection: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
   const [currentSlide, setCurrentSlide] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('https://usha-arts-fmhwhcc4hka4h3ce.eastasia-01.azurewebsites.net/products'); // Replace with your API endpoint
+        setProducts(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % products.length);
@@ -60,12 +63,23 @@ const HeroSection: React.FC = () => {
     setCurrentSlide((prev) => (prev - 1 + products.length) % products.length);
   };
 
+  if (loading || products.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      </div>
+    );
+  }
+
+  const currentProduct = products[currentSlide];
+  const bgColorClass = currentProduct.category === 'Home Decor' 
+    ? 'from-amber-50 to-green-50'
+    : 'from-blue-50 to-purple-50';
+
   return (
     <div className="relative">
       {/* Hero Slider */}
-      <div 
-        className={`bg-gradient-to-r ${products[currentSlide].bgColor} py-16 px-4 transition-all duration-500`}
-      >
+      <div className={`bg-gradient-to-r ${bgColorClass} py-16 px-4 transition-all duration-500`}>
         <div className="max-w-6xl mx-auto flex items-center relative">
           {/* Text Content */}
           <div className="w-1/2 pr-8 z-10">
@@ -77,7 +91,7 @@ const HeroSection: React.FC = () => {
               transition={{ duration: 0.5 }}
               className="text-4xl font-bold mb-4"
             >
-              {products[currentSlide].name}
+              {currentProduct.name}
             </motion.h1>
             <motion.p
               key={`desc-${currentSlide}`}
@@ -87,19 +101,53 @@ const HeroSection: React.FC = () => {
               transition={{ duration: 0.5 }}
               className="text-xl mb-6"
             >
-              {products[currentSlide].description}
+              {currentProduct.description}
             </motion.p>
+            
+            <motion.div 
+              key={`price-${currentSlide}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="text-2xl font-bold mb-6"
+            >
+              ${currentProduct.price}
+            </motion.div>
             
             <div className="flex space-x-4">
               <button className="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition flex items-center">
-                <ShoppingCart className="mr-2" /> Shop Now
+                <ShoppingCart className="mr-2" /> Add to Cart
               </button>
-              <button className="border border-green-600 text-green-600 px-6 py-3 rounded-full hover:bg-green-50 transition flex items-center">
-                <Leaf className="mr-2" /> Explore Options
-              </button>
+              {currentProduct.is_customizable && (
+                <button className="border border-green-600 text-green-600 px-6 py-3 rounded-full hover:bg-green-50 transition flex items-center">
+                  <Settings className="mr-2" /> Customize
+                </button>
+              )}
             </div>
+          </div>
 
-            {/* Slider Navigation */}
+          {/* Image Section */}
+          <div className="w-1/2 overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={`img-${currentSlide}`}
+                src={currentProduct.img_url}
+                alt={currentProduct.name}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.1 }}
+                transition={{ duration: 0.5 }}
+                className="rounded-lg shadow-lg w-full h-96 object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = "/api/placeholder/600/400";
+                }}
+              />
+            </AnimatePresence>
+          </div>
+
+          {/* Slider Navigation */}
+          {products.length > 1 && (
             <div className="absolute left-0 top-1/2 transform -translate-y-1/2 flex justify-between w-full">
               <button 
                 onClick={prevSlide}
@@ -114,28 +162,12 @@ const HeroSection: React.FC = () => {
                 <ChevronRight />
               </button>
             </div>
-          </div>
-
-          {/* Image Section with Animations */}
-          <div className="w-1/2 overflow-hidden">
-            <AnimatePresence>
-              <motion.img
-                key={`img-${currentSlide}`}
-                src={products[currentSlide].image}
-                alt={products[currentSlide].name}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.1 }}
-                transition={{ duration: 0.5 }}
-                className="rounded-lg shadow-lg w-full object-cover"
-              />
-            </AnimatePresence>
-          </div>
+          )}
         </div>
       </div>
 
       {/* Product Details Section */}
-      <ProductDetailSection currentProduct={products[currentSlide]} />
+      <ProductDetailSection currentProduct={currentProduct} />
     </div>
   );
 };
@@ -151,10 +183,14 @@ const ProductDetailSection: React.FC<ProductDetailSectionProps> = ({ currentProd
     offset: ["start end", "end start"]
   });
 
-  // Animations for feature entries
   const leftFeatureX = useTransform(scrollYProgress, [0.2, 0.5], [-100, 0]);
   const rightFeatureX = useTransform(scrollYProgress, [0.2, 0.5], [100, 0]);
   const featureOpacity = useTransform(scrollYProgress, [0.2, 0.5], [0, 1]);
+
+  // Split features into two groups for left and right sides
+  const midPoint = Math.ceil(currentProduct.features.length / 2);
+  const leftFeatures = currentProduct.features.slice(0, midPoint);
+  const rightFeatures = currentProduct.features.slice(midPoint);
 
   return (
     <div 
@@ -170,14 +206,14 @@ const ProductDetailSection: React.FC<ProductDetailSectionProps> = ({ currentProd
           }}
           className="w-1/3 space-y-6"
         >
-          {currentProduct.features.slice(0, 2).map((feature: Feature, index: number) => (
+          {leftFeatures.map((feature: Feature) => (
             <div 
-              key={index} 
+              key={feature.id} 
               className="bg-white p-6 rounded-lg shadow-md flex items-start space-x-4"
             >
-              <div className="flex-shrink-0">{feature.icon}</div>
+              <div className="flex-shrink-0 text-2xl">{feature.icon}</div>
               <div>
-                <h3 className="text-xl font-semibold">{feature.title}</h3>
+                <h3 className="text-xl font-semibold">{feature.tag}</h3>
                 <p className="text-gray-600">{feature.description}</p>
               </div>
             </div>
@@ -193,9 +229,13 @@ const ProductDetailSection: React.FC<ProductDetailSectionProps> = ({ currentProd
           className="w-1/3 flex justify-center"
         >
           <img 
-            src={currentProduct.image} 
+            src={currentProduct.img_url}
             alt={currentProduct.name}
             className="rounded-xl shadow-2xl object-cover w-full aspect-square"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = "/api/placeholder/600/400";
+            }}
           />
         </motion.div>
 
@@ -207,14 +247,14 @@ const ProductDetailSection: React.FC<ProductDetailSectionProps> = ({ currentProd
           }}
           className="w-1/3 space-y-6"
         >
-          {currentProduct.features.slice(2).map((feature: Feature, index: number) => (
+          {rightFeatures.map((feature: Feature) => (
             <div 
-              key={index} 
+              key={feature.id} 
               className="bg-white p-6 rounded-lg shadow-md flex items-start space-x-4"
             >
-              <div className="flex-shrink-0">{feature.icon}</div>
+              <div className="flex-shrink-0 text-2xl">{feature.icon}</div>
               <div>
-                <h3 className="text-xl font-semibold">{feature.title}</h3>
+                <h3 className="text-xl font-semibold">{feature.tag}</h3>
                 <p className="text-gray-600">{feature.description}</p>
               </div>
             </div>
