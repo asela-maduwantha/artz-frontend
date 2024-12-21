@@ -11,6 +11,7 @@ import ProductDisplay from '../components/Admin/ProductDisplay';
 import ContactsPage from '../pages/ContactsPage';
 import AboutPage from '../pages/AboutPage';
 import ProductPage from '../pages/ProductPage';
+import DiscountManagement from '../components/Admin/DiscountManagement';
 
 
 
@@ -27,10 +28,11 @@ const AppRoutes: React.FC = () => {
             <Route path="/contact" element={<ContactsPage/>} />
             <Route path="/about" element={<AboutPage/>} />
             <Route path="/shop" element={<ProductPage/>} />
-
+           
             <Route path="/admin" element={<AdminLayout/>} >
             <Route path="product" element={< Product/>} />
             <Route path="allproduct" element={< ProductDisplay/>} />
+            <Route path="discounts" element={<DiscountManagement/>} />
             </Route>
             
           

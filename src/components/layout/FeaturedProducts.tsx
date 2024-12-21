@@ -1,48 +1,68 @@
+import React, { useState, useEffect } from 'react';
 import { Heart } from "lucide-react";
+import { productService } from '../../services/api/productservice';
 
 interface Product {
+  id: number;
   name: string;
   description: string;
   price: number;
-  image: string;
+  img_url: string;
 }
 
-
 const FeaturedProducts: React.FC = () => {
-  const featuredProducts: Product[] = [
-    {
-      name: 'Personalized Photo Frame',
-      description: 'Custom pencil drawing framed in premium wood',
-      price: 3500,
-      image: 'https://img.freepik.com/free-vector/wedding-invitation-template_1340-147.jpg',
-    },
-    {
-      name: 'Eco-Friendly Gift Hamper',
-      description: 'Handcrafted sustainable gift box',
-      price: 4500,
-      image: 'https://img.freepik.com/free-photo/flat-lay-composition-flowers-with-copyspace_23-2148134775.jpg',
-    },
-    {
-      name: 'Handmade Earrings',
-      description: 'Natural materials, unique design',
-      price: 2500,
-      image: 'https://img.freepik.com/free-photo/top-view-essentials-bead-working-with-scissors_23-2148815798.jpg',
-    },
-  ];
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await productService.getAllProducts();
+        setProducts(data.slice(0, 3)); 
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load products');
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="py-12 px-4 sm:py-16 bg-green-100">
+        <div className="max-w-6xl mx-auto text-center">
+          Loading...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-12 px-4 sm:py-16 bg-green-100">
+        <div className="max-w-6xl mx-auto text-center text-red-600">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="py-12 px-4 sm:py-16 bg-green-50">
+    <div className="py-12 px-4 sm:py-16 bg-green-100">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">Our Featured Gifts</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {featuredProducts.map((product, index) => (
+          {products.map((product) => (
             <div
-              key={index}
+              key={product.id}
               className="bg-white rounded-lg p-4 sm:p-6 shadow-md hover:shadow-xl transition duration-300"
             >
               <div className="aspect-w-16 aspect-h-9 mb-4">
                 <img
-                  src={product.image}
+                  src={product.img_url}
                   alt={product.name}
                   className="w-full h-48 sm:h-64 object-cover rounded-md"
                 />
@@ -64,4 +84,4 @@ const FeaturedProducts: React.FC = () => {
   );
 };
 
-export default  FeaturedProducts ;
+export default FeaturedProducts;

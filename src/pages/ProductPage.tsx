@@ -93,7 +93,7 @@ const ProductPage: React.FC = () => {
                 customization_id: product.customization_options[0].id,
                 option_type: product.customization_options[0].type,
                 option_name: product.customization_options[0].name,
-                option_description: `${product.customization_options[0].name} - Additional cost: $${product.customization_options[0].additional_price}`,
+                option_description: `${product.customization_options[0].name} - Additional cost: LKR ${product.customization_options[0].additional_price}`,
               }
             }}
             onClick={() => handleCardClick(product)}

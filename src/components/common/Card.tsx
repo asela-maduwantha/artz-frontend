@@ -58,7 +58,7 @@ const Card: React.FC<CardProps> = ({ product, onClick }) => {
       <div className="h-5/2 w-full flex flex-col justify-between p-2">
         <h2 className="text-lg font-bold">{product.name}</h2>
         <p className="text-sm text-gray-600 mt-2">{product.description}</p>
-        <p className="text-xl font-semibold text-green-600 mt-2">{product.price}</p>
+        <p className="text-xl font-semibold text-green-600 mt-2">LKR {product.price}</p>
       </div>
 
       {/* Heart icon for wishlist at bottom right */}

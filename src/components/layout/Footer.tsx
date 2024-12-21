@@ -19,10 +19,10 @@ const Footer: React.FC = () => {
         <div>
           <h4 className="font-semibold mb-4">Quick Links</h4>
           <nav className="space-y-2">
-            <a href="#" className="text-gray-700 hover:text-green-600">Home</a>
-            <a href="#" className="text-gray-700 hover:text-green-600">Products</a>
-            <a href="#" className="text-gray-700 hover:text-green-600">About</a>
-            <a href="#" className="text-gray-700 hover:text-green-600">Contact</a>
+            <a href="#" className="text-gray-700 hover:text-green-600">Home</a><br></br>
+            <a href="#" className="text-gray-700 hover:text-green-600">Products</a><br></br>
+            <a href="#" className="text-gray-700 hover:text-green-600">About</a><br></br>
+            <a href="#" className="text-gray-700 hover:text-green-600">Contact</a><br></br>
           </nav>
         </div>
 
@@ -30,10 +30,10 @@ const Footer: React.FC = () => {
         <div>
           <h4 className="font-semibold mb-4">Customer Service</h4>
           <nav className="space-y-2">
-            <a href="#" className="text-gray-700 hover:text-green-600">FAQ</a>
-            <a href="#" className="text-gray-700 hover:text-green-600">Shipping</a>
-            <a href="#" className="text-gray-700 hover:text-green-600">Returns</a>
-            <a href="#" className="text-gray-700 hover:text-green-600">Support</a>
+            <a href="#" className="text-gray-700 hover:text-green-600">FAQ</a><br></br>
+            <a href="#" className="text-gray-700 hover:text-green-600">Shipping</a><br></br>
+            <a href="#" className="text-gray-700 hover:text-green-600">Returns</a><br></br>
+            <a href="#" className="text-gray-700 hover:text-green-600">Support</a><br></br>
           </nav>
         </div>
 
