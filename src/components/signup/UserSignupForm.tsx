@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {toast } from 'react-toastify'
+import { authService } from "../../services/api/authservice";
 
 import { 
   User, Mail, Lock, Phone, UserPlus, Eye, EyeOff,
@@ -14,6 +16,8 @@ interface FormData {
   phone: string;
   termsAccepted: boolean;
 }
+
+
 
 interface ValidationRules {
   [key: string]: (value: string, formData?: FormData) => string;
@@ -85,36 +89,41 @@ const SignupFormWithImage: React.FC = () => {
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validationRules: ValidationRules = useMemo(
     () => ({
       fullName: (value) => {
         if (!value.trim()) return "Full name required";
-        if (value.trim().split(" ").length < 2) return "First and last name";
+        if (value.trim().split(" ").length < 2) return "First and last name required";
         return "";
       },
       email: (value) => {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!value.trim()) return "Email required";
-        if (!emailRegex.test(value)) return "Invalid email";
+        if (!emailRegex.test(value)) return "Invalid email format";
         return "";
       },
       password: (value) => {
-        if (value.length < 8) return "Min 8 characters";
-        if (!/[A-Z]/.test(value)) return "Uppercase letter needed";
-        if (!/[0-9]/.test(value)) return "Number needed";
+        if (value.length < 8) return "Minimum 8 characters required";
+        if (!/[A-Z]/.test(value)) return "One uppercase letter required";
+        if (!/[0-9]/.test(value)) return "One number required";
+        if (!/[!@#$%^&*]/.test(value)) return "One special character required";
         return "";
       },
       confirmPassword: (value, formData) => {
+        if (!value) return "Please confirm password";
         if (value !== formData?.password) return "Passwords don't match";
         return "";
       },
       phone: (value) => {
         const phoneRegex = /^\+?([0-9]{2})[-. ]?([0-9]{4})[-. ]?([0-9]{4})$/;
-        if (value && !phoneRegex.test(value)) return "Invalid phone";
+        if (value && !phoneRegex.test(value)) return "Invalid phone format";
         return "";
       },
-      termsAccepted: (value) => (value ? "" : "Accept terms"),
+      termsAccepted: (value) => {
+        return value ? "" : "Please accept the terms";
+      },
     }),
     []
   );
@@ -127,18 +136,17 @@ const SignupFormWithImage: React.FC = () => {
       setFormData((prev) => ({ ...prev, [name]: fieldValue }));
 
       const errorMessage = validationRules[name](fieldValue as string, formData);
-
       setErrors((prev) => ({ ...prev, [name]: errorMessage }));
     },
     [validationRules, formData]
   );
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      setIsSubmitting(true);
 
       const newErrors = {} as { [key in keyof FormData]: string };
-
       (Object.keys(formData) as Array<keyof FormData>).forEach((key) => {
         newErrors[key] = validationRules[key](formData[key] as string, formData);
       });
@@ -146,8 +154,21 @@ const SignupFormWithImage: React.FC = () => {
       setErrors(newErrors);
 
       if (Object.values(newErrors).every((error) => error === "")) {
-        setShowSuccessModal(true);
+        try {
+          const userData = {
+            fullName: formData.fullName,
+            email: formData.email,
+            password: formData.password,
+            phone: formData.phone
+          };
+
+          await authService.signup(userData);
+          setShowSuccessModal(true);
+        } catch (error: any) {
+          toast.error(error.response?.data?.message || 'Registration failed');
+        }
       }
+      setIsSubmitting(false);
     },
     [formData, validationRules]
   );
@@ -220,7 +241,7 @@ const SignupFormWithImage: React.FC = () => {
   };
 
   const handleSignIn = () => {
-    alert('Navigate to Sign In Page');
+    window.location.href = '/login';
   };
 
   return (
@@ -248,37 +269,7 @@ const SignupFormWithImage: React.FC = () => {
               {renderInputField("email", "Email Address", "email", Mail)}
               {renderInputField("password", "Password", "password", Lock)}
               {renderInputField("confirmPassword", "Confirm Password", "password", Lock)}
-              
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Phone Number</label>
-                <div className="relative">
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    placeholder="Enter your phone number"
-                    className={`w-full px-4 py-2 pl-10 text-sm border-2 rounded-lg focus:outline-none transition-all duration-300 ${
-                      errors.phone 
-                        ? "border-red-500 bg-red-50" 
-                        : "border-gray-300 focus:border-green-600"
-                    }`}
-                  />
-                  <Phone className="absolute left-3 top-3 text-gray-500" size={16} />
-                  <AnimatePresence>
-                    {errors.phone && (
-                      <motion.p 
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="text-red-500 text-xs mt-1 pl-1"
-                      >
-                        {errors.phone}
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
+              {renderInputField("phone", "Phone Number", "tel", Phone)}
 
               <div className="flex items-center">
                 <input
@@ -286,17 +277,36 @@ const SignupFormWithImage: React.FC = () => {
                   name="termsAccepted"
                   checked={formData.termsAccepted}
                   onChange={handleInputChange}
-                  className="h-3 w-3 text-green-600 focus:ring-2 rounded mr-2"
+                  className="h-4 w-4 text-green-600 focus:ring-2 rounded mr-2"
                 />
-                <label className="text-xs text-gray-700">I agree to the terms</label>
+                <label className="text-xs text-gray-700">
+                  I agree to the <a href="/terms" className="text-green-600 hover:underline">Terms of Service</a> and <a href="/privacy" className="text-green-600 hover:underline">Privacy Policy</a>
+                </label>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2 text-sm rounded-lg bg-green-600 text-white hover:bg-green-700 transition-all duration-300 flex justify-center items-center"
+                disabled={isSubmitting}
+                className={`w-full py-2 text-sm rounded-lg text-white transition-all duration-300 flex justify-center items-center ${
+                  isSubmitting 
+                    ? "bg-green-400 cursor-not-allowed" 
+                    : "bg-green-600 hover:bg-green-700"
+                }`}
               >
-                <UserPlus className="mr-1" size={14} />
-                Register
+                {isSubmitting ? (
+                  <motion.div className="flex items-center">
+                    <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Processing...
+                  </motion.div>
+                ) : (
+                  <>
+                    <UserPlus className="mr-1" size={14} />
+                    Register
+                  </>
+                )}
               </button>
             </form>
 

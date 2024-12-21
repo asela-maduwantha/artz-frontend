@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { ShoppingCart, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
-import axios from 'axios';
+import { toast } from 'react-toastify';
+import { productService } from '../../services/api/productservice';
 
 // Type Definitions
 type Feature = {
@@ -189,17 +190,27 @@ const HeroSection: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('https://usha-arts-fmhwhcc4hka4h3ce.eastasia-01.azurewebsites.net/products');
-        setProducts(response.data);
-        setLoading(false);
+        setLoading(true);
+        const data = await productService.getAllProducts();
+        
+        const activeProducts = data.filter((product: Product) => product.is_active);
+        
+        if (activeProducts.length === 0) {
+          toast.warning('No active products available at the moment');
+          
+        } else {
+          setProducts(activeProducts);
+        }
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.log(error)
+      } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
   }, []);
+
 
   // Auto-slide functionality
   useEffect(() => {
@@ -223,7 +234,7 @@ const HeroSection: React.FC = () => {
   if (loading || products.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+        <div className="animate-spin full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
       </div>
     );
   }
@@ -341,3 +352,5 @@ const HeroSection: React.FC = () => {
 };
 
 export default HeroSection;
+
+

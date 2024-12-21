@@ -1,5 +1,6 @@
 import React from 'react';
-import { ShoppingCart, Menu } from 'lucide-react';
+import {  Menu } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
   return (
@@ -13,9 +14,19 @@ const Header: React.FC = () => {
           <a href="#" className="text-gray-800 hover:text-green-600 transition">Contact</a>
         </nav>
         <div className="flex items-center space-x-4">
-          <button className="text-gray-800 hover:text-green-600">
-            <ShoppingCart />
-          </button>
+          <Link 
+            to="/login"
+            className="px-4 py-2 text-gray-800 hover:text-green-600 transition"
+          >
+            Login
+          </Link>
+          <Link
+            to="/signup"
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+          >
+            Sign Up
+          </Link>
+          
           <button className="md:hidden text-gray-800 hover:text-green-600">
             <Menu />
           </button>

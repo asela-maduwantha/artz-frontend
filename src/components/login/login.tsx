@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Mail, Lock, Eye, EyeOff, LogIn, Check, X 
 } from "lucide-react";
+import { authService } from '../../services/api/authservice';
+import { toast } from 'react-toastify';
 
 const LoginForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -35,20 +37,17 @@ const LoginForm: React.FC = () => {
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
-      
       setFormData((prev) => ({ ...prev, [name]: value }));
-
       const errorMessage = name === 'email' 
         ? validateEmail(value) 
         : validatePassword(value);
-
       setErrors((prev) => ({ ...prev, [name]: errorMessage }));
     },
     []
   );
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setIsSubmitting(true);
       setSubmissionStatus('idle');
@@ -62,14 +61,19 @@ const LoginForm: React.FC = () => {
       });
 
       if (!emailError && !passwordError) {
-        // Simulate login process
-        setTimeout(() => {
-          setIsSubmitting(false);
+        try {
+          await authService.signin({
+            email: formData.email,
+            password: formData.password
+          });
           setSubmissionStatus('success');
-          setTimeout(() => {
-            setSubmissionStatus('idle');
-          }, 2000);
-        }, 1500);
+          // Redirect or handle successful login
+        } catch (error: any) {
+          setSubmissionStatus('error');
+          toast.error(error.response?.data?.message || 'Login failed');
+        } finally {
+          setIsSubmitting(false);
+        }
       } else {
         setIsSubmitting(false);
         setSubmissionStatus('error');
@@ -83,7 +87,7 @@ const LoginForm: React.FC = () => {
   };
 
   const handleForgotPassword = () => {
-    alert('Forgot Password - Reset link will be sent');
+    toast.info('Reset password link will be sent to your email');
   };
 
   return (
@@ -95,7 +99,7 @@ const LoginForm: React.FC = () => {
       >
         <div className="h-full bg-black bg-opacity-50 flex items-center justify-center">
           <h1 className="text-white text-3xl font-bold text-center p-6">
-          
+            Welcome Back
           </h1>
         </div>
       </div>
@@ -103,7 +107,7 @@ const LoginForm: React.FC = () => {
       {/* Form Section */}
       <div className="w-full lg:w-1/2 bg-white py-16 px-4 flex items-center justify-center">
         <div className="max-w-xl w-full bg-gray-50 rounded-2xl p-8 shadow-xl">
-          <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">Welcome Back</h2>
+          <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">Login</h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -270,7 +274,7 @@ const LoginForm: React.FC = () => {
           <div className="text-center mt-6 text-sm text-gray-600">
             Don't have an account? 
             <button 
-              onClick={() => alert('Navigate to Signup')}
+              onClick={() => window.location.href = '/signup'}
               className="ml-1 text-green-600 hover:text-green-800 font-semibold transition-colors"
             >
               Sign Up

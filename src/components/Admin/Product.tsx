@@ -1,160 +1,261 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Package, Plus, Trash2, Upload } from 'lucide-react';
+import {
+  productService,
+  ProductData,
+  ProductFeature,
+  CustomizationOption,
+} from '../../services/api/productservice';
 
-// Define types
-type CustomizationOption = {
-  name: string;
-  type: 'text' | 'dropdown' | 'color' | 'checkbox';
-  description: string;
+// Available icons for features
+const availableIcons = [
+  '👜',
+  '💳',
+  '📏',
+  '✨',
+  '🎨',
+  '📦',
+  '🎁',
+  '🛍️',
+  '💝',
+  '🎯',
+  '⭐',
+  '🌟',
+  '💫',
+  '🌈',
+  '🎨',
+  '🎭',
+  '🎪',
+  '🎢',
+  '🎡',
+  '🎠',
+];
+
+type CategoryKey = keyof typeof categoryMap;
+
+const categoryMap = {
+  'Handmade Jewelry': ['Necklaces', 'Bracelets', 'Earrings', 'Rings', 'Anklets'],
+  'Eco-Friendly Gift Items': [
+    'Reusable Bags',
+    'Bamboo Products',
+    'Upcycled Decor',
+    'Natural Candles',
+    'Sustainable Kitchenware',
+  ],
+  'Personalized Keepsakes': [
+    'Personalized Photo Frames',
+    'Customized Keychains',
+    'Engraved Wooden Plaques',
+    'Monogrammed Items',
+    'Memory Books',
+  ],
 };
 
-type CategoryMapType = {
-  [key: string]: string[];
-};
+const Product = () => {
+  const [formData, setFormData] = useState<Partial<ProductData>>({
+    name: '',
+    description: '',
+    price: 0,
+    img_url: '',
+    category: '',
+    is_customizable: false,
+    is_active: true,
+    features: [],
+    customization_options: [],
+  });
 
-const Product: React.FC = () => {
-  // Comprehensive category mapping
-  const categoryMap: CategoryMapType = {
-    'Handmade Jewelry': [
-      'Necklaces', 'Bracelets', 'Earrings', 
-      'Rings', 'Anklets'
-    ],
-    'Eco-Friendly Gift Items': [
-      'Reusable Bags', 'Bamboo Products', 
-      'Upcycled Decor', 'Natural Candles', 
-      'Sustainable Kitchenware'
-    ],
-    'Personalized Keepsakes': [
-      'Personalized Photo Frames', 
-      'Customized Keychains', 
-      'Engraved Wooden Plaques', 
-      'Monogrammed Items', 
-      'Memory Books'
-    ]
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [availableSubCategories, setAvailableSubCategories] = useState<string[]>([]);
+
+  // Handle main category change
+  const handleCategoryChange = (category: CategoryKey) => {
+    setFormData((prev) => ({
+      ...prev,
+      category: category,
+    }));
+    setAvailableSubCategories(categoryMap[category] || []);
   };
 
-  // State with type annotations
-  const [productName, setProductName] = useState<string>('');
-  const [productDescription, setProductDescription] = useState<string>('');
-  const [productPrice, setProductPrice] = useState<string>('');
-  
-  const [mainCategory, setMainCategory] = useState<string>('');
-  const [subCategory, setSubCategory] = useState<string>('');
-  const [availableSubCategories, setAvailableSubCategories] = useState<string[]>([]);
-  
-  const [isCustomizable, setIsCustomizable] = useState<boolean>(false);
-  const [customizationOptions, setCustomizationOptions] = useState<CustomizationOption[]>([
-    { name: '', type: 'text', description: '' }
-  ]);
+  // Handle feature changes
+  const handleFeatureChange = (index: number, field: keyof ProductFeature, value: string) => {
+    const updatedFeatures = [...(formData.features || [])];
+    updatedFeatures[index] = {
+      ...updatedFeatures[index],
+      [field]: value,
+    };
+    setFormData((prev) => ({ ...prev, features: updatedFeatures }));
+  };
 
-  // Update available subcategories when main category changes
-  useEffect(() => {
-    // Reset subcategory when main category changes
-    setSubCategory('');
-    
-    // Set available subcategories based on selected main category
-    if (mainCategory) {
-      setAvailableSubCategories(categoryMap[mainCategory] || []);
-    } else {
-      setAvailableSubCategories([]);
-    }
-  }, [mainCategory]);
+  // Add new feature
+  const addFeature = () => {
+    setFormData((prev) => ({
+      ...prev,
+      features: [...(prev.features || []), { tag: '', description: '', icon: '✨' }],
+    }));
+  };
 
-  // Typed handler for customization option changes
+  // Remove feature
+  const removeFeature = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      features: (prev.features || []).filter((_, i) => i !== index),
+    }));
+  };
+
+  // Handle customization option changes
   const handleCustomizationChange = (
-    index: number, 
-    field: keyof CustomizationOption, 
-    value: string
+    index: number,
+    field: keyof CustomizationOption,
+    value: any
   ) => {
-    const updatedOptions = [...customizationOptions];
+    const updatedOptions = [...(formData.customization_options || [])];
     updatedOptions[index] = {
       ...updatedOptions[index],
-      [field]: value
+      [field]: value,
     };
-    setCustomizationOptions(updatedOptions);
+    setFormData((prev) => ({ ...prev, customization_options: updatedOptions }));
   };
 
   // Add new customization option
   const addCustomizationOption = () => {
-    setCustomizationOptions([
-      ...customizationOptions, 
-      { name: '', type: 'text', description: '' }
-    ]);
+    const newOption: CustomizationOption = {
+      name: '',
+      type: 'text',
+      available_values: [],
+      min_value: 0,
+      max_value: 0,
+      additional_price: 0,
+      is_required: false,
+    };
+    setFormData((prev) => ({
+      ...prev,
+      customization_options: [...(prev.customization_options || []), newOption],
+    }));
   };
 
   // Remove customization option
   const removeCustomizationOption = (index: number) => {
-    const updatedOptions = customizationOptions.filter((_, i) => i !== index);
-    setCustomizationOptions(updatedOptions);
+    setFormData((prev) => ({
+      ...prev,
+      customization_options: (prev.customization_options || []).filter((_, i) => i !== index),
+    }));
+  };
+
+  // Handle image upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      // In a real application, you would upload to your server/cloud storage
+      // and get back a URL. This is just a placeholder.
+      setFormData((prev) => ({
+        ...prev,
+        img_url: URL.createObjectURL(file),
+      }));
+    }
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const productData = {
-      name: productName,
-      description: productDescription,
-      price: productPrice,
-      category: mainCategory,
-      subCategory: subCategory,
-      isCustomizable,
-      customizationOptions: isCustomizable ? customizationOptions : []
-    };
-    console.log('Product Data:', productData);
-    // Add your submission logic here
+    try {
+      await productService.createProduct(formData as ProductData);
+      // Handle success (e.g., show toast, redirect)
+    } catch (error) {
+      // Handle error (e.g., show toast)
+      console.error('Error creating product:', error);
+    }
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6">Add New Product</h2>
+    <div className="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow-lg">
+      <div className="mb-6 flex items-center space-x-2">
+        <Package className="text-emerald-600" size={24} />
+        <h2 className="text-2xl font-bold text-gray-800">Add New Product</h2>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic Product Information */}
-        <div className="grid grid-cols-2 gap-4">
+        {/* Basic Information */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
-            <label className="block mb-2 font-medium">Product Name</label>
-            <input 
+            <label className="mb-2 block text-sm font-medium text-gray-700">Product Name</label>
+            <input
               type="text"
-              value={productName}
-              onChange={(e) => setProductName(e.target.value)}
-              placeholder="Enter product name"
-              className="w-full border rounded p-2"
+              value={formData.name}
+              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+              className="w-full rounded-md border border-gray-300 p-2 focus:border-emerald-500 focus:ring-emerald-500"
               required
             />
           </div>
+
           <div>
-            <label className="block mb-2 font-medium">Product Price</label>
-            <input 
+            <label className="mb-2 block text-sm font-medium text-gray-700">Price</label>
+            <input
               type="number"
-              value={productPrice}
-              onChange={(e) => setProductPrice(e.target.value)}
-              placeholder="Enter product price"
-              className="w-full border rounded p-2"
+              value={formData.price}
+              onChange={(e) => setFormData((prev) => ({ ...prev, price: Number(e.target.value) }))}
+              className="w-full rounded-md border border-gray-300 p-2 focus:border-emerald-500 focus:ring-emerald-500"
               required
             />
           </div>
         </div>
 
+        {/* Description */}
         <div>
-          <label className="block mb-2 font-medium">Product Description</label>
-          <textarea 
-            className="w-full border rounded p-2"
-            value={productDescription}
-            onChange={(e) => setProductDescription(e.target.value)}
-            placeholder="Enter product description"
+          <label className="mb-2 block text-sm font-medium text-gray-700">Description</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+            rows={4}
+            className="w-full rounded-md border border-gray-300 p-2 focus:border-emerald-500 focus:ring-emerald-500"
             required
           />
         </div>
 
+        {/* Image Upload */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-700">Product Image</label>
+          <div className="flex items-center space-x-4">
+            <div className="flex-shrink-0">
+              {formData.img_url ? (
+                <img
+                  src={formData.img_url}
+                  alt="Preview"
+                  className="h-32 w-32 rounded-lg object-cover"
+                />
+              ) : (
+                <div className="flex h-32 w-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300">
+                  <Upload className="text-gray-400" size={24} />
+                </div>
+              )}
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              id="image-upload"
+            />
+            <label
+              htmlFor="image-upload"
+              className="cursor-pointer rounded-md bg-emerald-50 px-4 py-2 text-emerald-600 hover:bg-emerald-100"
+            >
+              Choose Image
+            </label>
+          </div>
+        </div>
+
         {/* Category Selection */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
-            <label className="block mb-2 font-medium">Main Category</label>
-            <select 
-              value={mainCategory}
-              onChange={(e) => setMainCategory(e.target.value)}
-              className="w-full border rounded p-2"
+            <label className="mb-2 block text-sm font-medium text-gray-700">Category</label>
+            <select
+              value={formData.category}
+              onChange={(e) => handleCategoryChange(e.target.value as CategoryKey)}
+              className="w-full rounded-md border border-gray-300 p-2 focus:border-emerald-500 focus:ring-emerald-500"
               required
             >
-              <option value="">Select Main Category</option>
+              <option value="">Select Category</option>
               {Object.keys(categoryMap).map((category) => (
                 <option key={category} value={category}>
                   {category}
@@ -162,104 +263,291 @@ const Product: React.FC = () => {
               ))}
             </select>
           </div>
-          <div>
-            <label className="block mb-2 font-medium">Sub Category</label>
-            <select 
-              value={subCategory}
-              onChange={(e) => setSubCategory(e.target.value)}
-              className="w-full border rounded p-2"
-              disabled={!mainCategory}
-              required
+        </div>
+
+        {/* Features */}
+        <div className="rounded-lg border bg-gray-50 p-4">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-lg font-medium text-gray-700">Product Features</h3>
+            <button
+              type="button"
+              onClick={addFeature}
+              className="flex items-center space-x-1 text-emerald-600 hover:text-emerald-700"
             >
-              <option value="">Select Sub Category</option>
-              {availableSubCategories.map((subcategory) => (
-                <option key={subcategory} value={subcategory}>
-                  {subcategory}
-                </option>
-              ))}
-            </select>
+              <Plus size={16} />
+              <span>Add Feature</span>
+            </button>
           </div>
-        </div>
 
-        {/* Customization Toggle */}
-        <div className="flex items-center space-x-2">
-          <input 
-            type="checkbox"
-            checked={isCustomizable}
-            onChange={(e) => setIsCustomizable(e.target.checked)}
-            className="form-checkbox"
-          />
-          <label>Make Product Customizable</label>
-        </div>
+          <div className="space-y-4">
+            {formData.features?.map((feature, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-1 gap-4 rounded-lg bg-white p-4 md:grid-cols-3"
+              >
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Feature Tag
+                  </label>
+                  <input
+                    type="text"
+                    value={feature.tag}
+                    onChange={(e) => handleFeatureChange(index, 'tag', e.target.value)}
+                    className="w-full rounded-md border border-gray-300 p-2"
+                  />
+                </div>
 
-        {/* Customization Options */}
-        {isCustomizable && (
-          <div className="border p-4 rounded-lg bg-gray-50">
-            <h3 className="text-lg font-semibold mb-4">Customization Options</h3>
-            {customizationOptions.map((option, index) => (
-              <div key={index} className="mb-4 p-3 border rounded bg-white">
-                <div className="grid grid-cols-3 gap-4 mb-2">
-                  <div>
-                    <label className="block mb-2 font-medium">Option Name</label>
-                    <input 
-                      type="text"
-                      value={option.name}
-                      onChange={(e) => handleCustomizationChange(index, 'name', e.target.value)}
-                      placeholder="Enter option name"
-                      className="w-full border rounded p-2"
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 font-medium">Option Type</label>
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Description
+                  </label>
+                  <input
+                    type="text"
+                    value={feature.description}
+                    onChange={(e) => handleFeatureChange(index, 'description', e.target.value)}
+                    className="w-full rounded-md border border-gray-300 p-2"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">Icon</label>
+                  <div className="flex items-center space-x-2">
                     <select
-                      value={option.type}
-                      onChange={(e) => handleCustomizationChange(index, 'type', e.target.value as CustomizationOption['type'])}
-                      className="w-full border rounded p-2"
+                      value={feature.icon}
+                      onChange={(e) => handleFeatureChange(index, 'icon', e.target.value)}
+                      className="w-full rounded-md border border-gray-300 p-2"
                     >
-                      <option value="text">Text Input</option>
-                      <option value="dropdown">Dropdown</option>
-                      <option value="color">Color Picker</option>
-                      <option value="checkbox">Checkbox</option>
+                      {availableIcons.map((icon) => (
+                        <option key={icon} value={icon}>
+                          {icon}
+                        </option>
+                      ))}
                     </select>
-                  </div>
-                  <div className="flex items-end">
-                    <button 
-                      type="button" 
-                      onClick={() => removeCustomizationOption(index)}
-                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                    <button
+                      type="button"
+                      onClick={() => removeFeature(index)}
+                      className="text-red-500 hover:text-red-600"
                     >
-                      Remove
+                      <Trash2 size={20} />
                     </button>
                   </div>
                 </div>
-                <div>
-                  <label className="block mb-2 font-medium">Option Description</label>
-                  <textarea 
-                    className="w-full border rounded p-2"
-                    value={option.description}
-                    onChange={(e) => handleCustomizationChange(index, 'description', e.target.value)}
-                    placeholder="Enter option description"
-                  />
-                </div>
               </div>
             ))}
-            <button 
-              type="button" 
-              onClick={addCustomizationOption}
-              className="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-            >
-              Add Customization Option
-            </button>
           </div>
-        )}
+        </div>
+
+        {/* Customization Options */}
+        <div className="rounded-lg border bg-gray-50 p-4">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium text-gray-700">Customization Options</h3>
+              <div className="mt-2 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.is_customizable}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, is_customizable: e.target.checked }))
+                  }
+                  className="mr-2"
+                />
+                <span className="text-sm text-gray-600">Enable customization</span>
+              </div>
+            </div>
+            {formData.is_customizable && (
+              <button
+                type="button"
+                onClick={addCustomizationOption}
+                className="flex items-center space-x-1 text-emerald-600 hover:text-emerald-700"
+              >
+                <Plus size={16} />
+                <span>Add Option</span>
+              </button>
+            )}
+          </div>
+
+          {formData.is_customizable && (
+            <div className="space-y-4">
+              {formData.customization_options?.map((option, index) => (
+                <div key={index} className="space-y-4 rounded-lg bg-white p-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Option Name
+                      </label>
+                      <input
+                        type="text"
+                        value={option.name}
+                        onChange={(e) => handleCustomizationChange(index, 'name', e.target.value)}
+                        className="w-full rounded-md border border-gray-300 p-2"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Option Type
+                      </label>
+                      <select
+                        value={option.type}
+                        onChange={(e) => handleCustomizationChange(index, 'type', e.target.value)}
+                        className="w-full rounded-md border border-gray-300 p-2"
+                        required
+                      >
+                        <option value="text">Text Input</option>
+                        <option value="dropdown">Dropdown</option>
+                        <option value="color">Color Picker</option>
+                        <option value="number">Number Input</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Additional Price
+                      </label>
+                      <input
+                        type="number"
+                        value={option.additional_price}
+                        onChange={(e) =>
+                          handleCustomizationChange(
+                            index,
+                            'additional_price',
+                            Number(e.target.value)
+                          )
+                        }
+                        className="w-full rounded-md border border-gray-300 p-2"
+                        min="0"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    {(option.type === 'text' || option.type === 'number') && (
+                      <>
+                        <div>
+                          <label className="mb-2 block text-sm font-medium text-gray-700">
+                            Minimum Value
+                          </label>
+                          <input
+                            type="number"
+                            value={option.min_value}
+                            onChange={(e) =>
+                              handleCustomizationChange(index, 'min_value', Number(e.target.value))
+                            }
+                            className="w-full rounded-md border border-gray-300 p-2"
+                            min="0"
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-2 block text-sm font-medium text-gray-700">
+                            Maximum Value
+                          </label>
+                          <input
+                            type="number"
+                            value={option.max_value}
+                            onChange={(e) =>
+                              handleCustomizationChange(index, 'max_value', Number(e.target.value))
+                            }
+                            className="w-full rounded-md border border-gray-300 p-2"
+                            min="0"
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Available Values
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {option.available_values.map((value, valueIndex) => (
+                        <div
+                          key={valueIndex}
+                          className="flex items-center rounded bg-gray-100 px-3 py-1"
+                        >
+                          <span>{value}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newValues = [...option.available_values];
+                              newValues.splice(valueIndex, 1);
+                              handleCustomizationChange(index, 'available_values', newValues);
+                            }}
+                            className="ml-2 text-red-500 hover:text-red-600"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      <input
+                        type="text"
+                        placeholder="Add value and press Enter"
+                        className="rounded-md border border-gray-300 p-1"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const input = e.target as HTMLInputElement;
+                            const value = input.value.trim();
+                            if (value) {
+                              handleCustomizationChange(index, 'available_values', [
+                                ...option.available_values,
+                                value,
+                              ]);
+                              input.value = '';
+                            }
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={option.is_required}
+                        onChange={(e) =>
+                          handleCustomizationChange(index, 'is_required', e.target.checked)
+                        }
+                        className="mr-2"
+                      />
+                      <span className="text-sm text-gray-600">Required option</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeCustomizationOption(index)}
+                      className="flex items-center space-x-1 text-red-500 hover:text-red-600"
+                    >
+                      <Trash2 size={16} />
+                      <span>Remove Option</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Active Status */}
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={formData.is_active}
+            onChange={(e) => setFormData((prev) => ({ ...prev, is_active: e.target.checked }))}
+            className="rounded text-emerald-600"
+          />
+          <label className="text-sm text-gray-700">Make product active and visible in store</label>
+        </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end">
-          <button 
-            type="submit" 
-            className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+        <div className="flex justify-end pt-6">
+          <button
+            type="submit"
+            className="flex items-center space-x-2 rounded-lg bg-emerald-600 px-6 py-2 text-white transition-colors duration-200 hover:bg-emerald-700"
           >
-            Add Product
+            <Package size={20} />
+            <span>Add Product</span>
           </button>
         </div>
       </form>
