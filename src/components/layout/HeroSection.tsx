@@ -277,7 +277,7 @@ const HeroSection: React.FC = () => {
               exit={{ opacity: 0, y: -20 }}
               className="text-2xl font-bold mb-6"
             >
-              ${currentProduct.price.toFixed(2)}
+              LKR {currentProduct.price.toFixed(2)}
             </motion.div>
             
             <div className="flex space-x-4">
