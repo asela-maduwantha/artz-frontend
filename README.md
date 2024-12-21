@@ -9,7 +9,7 @@ A modern e-commerce platform for handcrafted products built with React TypeScrip
 git clone https://github.com/your-username/artzbyusha-frontend.git
 
 # Navigate to project directory
-cd artzbyusha-frontend
+cd artz-frontend
 
 # Install dependencies
 npm install
@@ -25,11 +25,10 @@ npm run build
 
 - React 18
 - TypeScript
-- Redux Toolkit
+- Lucide Icons
 - React Router 6
 - Tailwind CSS
 - Axios
-- React Hook Form
 
 ## Features
 
