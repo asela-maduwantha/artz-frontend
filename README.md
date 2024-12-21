@@ -1,50 +1,68 @@
-# React + TypeScript + Vite
+# ArtzByUsha - Handcrafted E-commerce Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern e-commerce platform for handcrafted products built with React TypeScript.
 
-Currently, two official plugins are available:
+## Installation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+# Clone the repository
+git clone https://github.com/your-username/artzbyusha-frontend.git
 
-## Expanding the ESLint configuration
+# Navigate to project directory
+cd artzbyusha-frontend
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+# Install dependencies
+npm install
 
-- Configure the top-level `parserOptions` property like this:
+# Start development server
+npm run dev
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+# Build for production
+npm run build
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Tech Stack
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+- React 18
+- TypeScript
+- Redux Toolkit
+- React Router 6
+- Tailwind CSS
+- Axios
+- React Hook Form
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+## Features
+
+- Product catalog with search and filters
+- Shopping cart functionality
+- User authentication
+- Order tracking
+- Product customization
+- Loyalty program
+- Responsive design
+
+## Environment Variables
+
+Create `.env` file:
 ```
+VITE_API_URL=your_api_url
+VITE_STRIPE_KEY=your_stripe_key
+```
+
+## Scripts
+
+```bash
+npm run dev        # Start development server
+npm run build      # Build for production
+npm run test       # Run tests
+npm run lint       # Run linter
+```
+
+## Contact
+
+- Email: support@artzbyusha.com
+- Website: www.artzbyusha.com
+
+---
+
+Made with ❤️ by ArtzByUsha Team
