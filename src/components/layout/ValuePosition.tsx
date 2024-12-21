@@ -1,27 +1,41 @@
 import React from 'react';
 import { Leaf, Heart, ShoppingCart } from 'lucide-react';
 
+
+
 const ValueProposition: React.FC = () => {
+  const features = [
+    {
+      icon: <Leaf size={48} className="text-green-600" />,
+      title: "Eco-Friendly",
+      description: "Sustainable materials and environmentally conscious production"
+    },
+    {
+      icon: <Heart size={48} className="text-red-600" />,
+      title: "Personalized",
+      description: "Unique gifts tailored to your specific preferences"
+    },
+    {
+      icon: <ShoppingCart size={48} className="text-blue-600" />,
+      title: "Island-wide Delivery",
+      description: "Convenient shipping across Sri Lanka"
+    }
+  ];
+
   return (
-    <div className="bg-gray-100 py-16 px-4">
+    <div className="bg-green-50 py-12 px-4 sm:py-16">
       <div className="max-w-6xl mx-auto text-center">
-        <h2 className="text-3xl font-bold mb-8">Why Choose Artz by Usha?</h2>
-        <div className="grid grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <Leaf className="mx-auto mb-4 text-green-600" size={48} />
-            <h3 className="text-xl font-semibold mb-4">Eco-Friendly</h3>
-            <p>Sustainable materials and environmentally conscious production</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <Heart className="mx-auto mb-4 text-red-600" size={48} />
-            <h3 className="text-xl font-semibold mb-4">Personalized</h3>
-            <p>Unique gifts tailored to your specific preferences</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <ShoppingCart className="mx-auto mb-4 text-blue-600" size={48} />
-            <h3 className="text-xl font-semibold mb-4">Island-wide Delivery</h3>
-            <p>Convenient shipping across Sri Lanka</p>
-          </div>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-8">Why Choose Artz by Usha?</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          {features.map((feature, index) => (
+            <div key={index} className="bg-white p-6 rounded-lg shadow-md transform transition duration-300 hover:scale-105">
+              <div className="flex flex-col items-center">
+                <div className="mx-auto mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold mb-4">{feature.title}</h3>
+                <p className="text-gray-600">{feature.description}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
