@@ -13,7 +13,7 @@ const AboutPage: React.FC = () => {
       <AboutIntro/>
       <AboutDes/>
       <AboutReview/>
-      <div className='h-0.5 bg-green-500 my-6'></div>
+      <div className='h-0.5 w-full bg-green-500 my-6'></div>
       <Footer/>
     </div>
   );
