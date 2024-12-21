@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Package, Plus, Trash2, Upload } from 'lucide-react';
 import {
   productService,
@@ -65,6 +65,7 @@ const Product = () => {
   });
 
   const [availableSubCategories, setAvailableSubCategories] = useState<string[]>([]);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Handle main category change
   const handleCategoryChange = (category: CategoryKey) => {
@@ -142,36 +143,47 @@ const Product = () => {
   };
 
   // Handle image upload
- const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (file) {
-  
-    
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "your_upload_preset"); // Add your preset
-
-    try {
-      const response = await fetch("https://api.cloudinary.com/v1_1/your_cloud_name/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
       
-      if (response.ok) {
-        setFormData((prev) => ({
-          ...prev,
-          img_url: data.secure_url,  // Cloudinary returns secure_url
-        }));
-      } else {
-        console.error("Upload failed", data.error);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "your_upload_preset");
+
+      try {
+        const response = await fetch("https://api.cloudinary.com/v1_1/your_cloud_name/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          setFormData((prev) => ({
+            ...prev,
+            img_url: data.secure_url,
+          }));
+        } else {
+          console.error("Upload failed", data.error);
+        }
+      } catch (error) {
+        console.error("Error uploading image", error);
       }
-    } catch (error) {
-      console.error("Error uploading image", error);
     }
-  }
-};
+  };
+
+  useEffect(() => {
+    return () => {
+      // Cleanup preview URL when component unmounts
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
 
   // Handle form submission
@@ -233,36 +245,49 @@ const Product = () => {
 
         {/* Image Upload */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">Product Image</label>
-          <div className="flex items-center space-x-4">
-            <div className="flex-shrink-0">
-              {formData.img_url ? (
-                <img
-                  src={formData.img_url}
-                  alt="Preview"
-                  className="h-32 w-32 rounded-lg object-cover"
-                />
-              ) : (
-                <div className="flex h-32 w-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300">
-                  <Upload className="text-gray-400" size={24} />
+      <label className="mb-2 block text-sm font-medium text-gray-700">Product Image</label>
+      <div className="flex items-center space-x-4">
+        <div className="flex-shrink-0">
+          {imagePreview || formData.img_url ? (
+            <div className="relative">
+              <img
+                src={imagePreview || formData.img_url}
+                alt="Preview"
+                className="h-32 w-32 rounded-lg object-cover"
+              />
+              {imagePreview && !formData.img_url && (
+                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-1 text-center text-xs text-white">
+                  Uploading...
                 </div>
               )}
             </div>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-              id="image-upload"
-            />
-            <label
-              htmlFor="image-upload"
-              className="cursor-pointer rounded-md bg-emerald-50 px-4 py-2 text-emerald-600 hover:bg-emerald-100"
-            >
-              Choose Image
-            </label>
-          </div>
+          ) : (
+            <div className="flex h-32 w-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300">
+              <Upload className="text-gray-400" size={24} />
+            </div>
+          )}
         </div>
+        <div className="space-y-2">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+            id="image-upload"
+          />
+          <label
+            htmlFor="image-upload"
+            className="cursor-pointer rounded-md bg-emerald-50 px-4 py-2 text-emerald-600 hover:bg-emerald-100"
+          >
+            Choose Image
+          </label>
+          {imagePreview && !formData.img_url && (
+            <p className="text-sm text-gray-500">Image selected, uploading to server...</p>
+          )}
+        </div>
+      </div>
+    </div>
+
 
         {/* Category Selection */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

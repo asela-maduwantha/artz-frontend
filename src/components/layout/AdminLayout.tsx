@@ -1,5 +1,5 @@
-import  { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Leaf, 
   Package, 
@@ -15,8 +15,41 @@ import {
 } from 'lucide-react';
 
 const AdminLayout = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigation = useNavigate()
+
+  const handleLogout = ()=>{
+    localStorage.clear();
+    navigation('/');
+  }
+
+  // Close sidebar on mobile when route changes
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close sidebar on route change (mobile only)
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
+  }, [location.pathname]);
 
   const navigationItems = [
     { title: 'Dashboard', path: '/admin/dashboard', icon: BarChart3 },
@@ -27,19 +60,21 @@ const AdminLayout = () => {
     { title: 'Settings', path: '/admin/profile-settings', icon: Settings },
   ];
 
-  const isActiveRoute = (path:string) => {
+  const isActiveRoute = (path: string) => {
     return location.pathname === path;
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-stone-50">
       {/* Header */}
-      <header className="bg-emerald-700 text-white py-3 px-4 shadow-lg">
+      <header className="sticky top-0 z-40 bg-emerald-700 text-white py-3 px-4 shadow-lg">
         <div className="flex justify-between items-center max-w-7xl mx-auto">
           <div className="flex items-center space-x-3">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 hover:bg-emerald-600 rounded-lg transition-colors"
+              className="lg:hidden p-2 hover:bg-emerald-600 rounded-lg transition-colors"
+              aria-label="Toggle menu"
+              aria-expanded={isSidebarOpen}
             >
               {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -54,7 +89,7 @@ const AdminLayout = () => {
               <User size={18} />
               <span className="hidden sm:inline">Profile</span>
             </button>
-            <button className="flex items-center space-x-2 px-3 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition-colors">
+            <button className="flex items-center space-x-2 px-3 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition-colors" onClick={handleLogout}>
               <LogOut size={18} />
               <span className="hidden sm:inline">Logout</span>
             </button>
@@ -63,15 +98,27 @@ const AdminLayout = () => {
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-1">
+      <div className="flex flex-1 relative">
+        {/* Backdrop for mobile */}
+        {isSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 lg:hidden z-30"
+            onClick={() => setIsSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
         {/* Sidebar */}
-        <nav className={`
-          fixed lg:static inset-y-0 left-0 
-          transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:transform-none transition-transform duration-200 ease-in-out
-          w-64 bg-white border-r border-emerald-100 shadow-lg
-          z-30 lg:z-0
-        `}>
+        <nav 
+          className={`
+            fixed lg:static inset-y-0 left-0 
+            w-64 bg-white border-r border-emerald-100 shadow-lg
+            transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            lg:transform-none transition-transform duration-200 ease-in-out
+            z-40 lg:z-0 overflow-y-auto
+          `}
+          aria-label="Main navigation"
+        >
           <div className="flex flex-col h-full p-4">
             <div className="space-y-1 flex-1">
               {navigationItems.map((item) => {
@@ -116,7 +163,7 @@ const AdminLayout = () => {
         </nav>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 lg:p-6 bg-stone-50">
+        <main className="flex-1 p-4 lg:p-6">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>

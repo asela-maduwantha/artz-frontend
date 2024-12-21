@@ -36,6 +36,7 @@ type Product = {
   customization_options: CustomizationOption[];
 };
 
+
 // Customization Panel Component
 const CustomizationPanel: React.FC<{
   options: CustomizationOption[];
@@ -109,9 +110,10 @@ const ProductDetailSection: React.FC<{
   const rightFeatures = currentProduct.features.slice(midPoint);
 
   return (
+    <> <div className='text-4xl font-bold bg-gray-50 pt-16 mb-0 pb-10 text-center'  >{currentProduct.name}</div>
     <div 
       ref={ref} 
-      className="min-h-screen flex items-center justify-center bg-gray-50 py-16 px-4"
+      className="h-3/4 flex items-center justify-center bg-gray-50  pb-10"
     >
       <div className="max-w-6xl mx-auto flex items-center space-x-8">
         <motion.div 
@@ -145,7 +147,7 @@ const ProductDetailSection: React.FC<{
           <img 
             src={currentProduct.img_url}
             alt={currentProduct.name}
-            className="rounded-xl shadow-2xl object-cover w-full aspect-square"
+            className="rounded-full shadow-2xl object-cover w-full aspect-square"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = "/api/placeholder/600/400";
@@ -174,7 +176,8 @@ const ProductDetailSection: React.FC<{
           ))}
         </motion.div>
       </div>
-    </div>
+    </div></>
+    
   );
 };
 
@@ -240,13 +243,10 @@ const HeroSection: React.FC = () => {
   }
 
   const currentProduct = products[currentSlide];
-  const bgColorClass = currentProduct.category === 'Home Decor' 
-    ? 'from-amber-50 to-green-50'
-    : 'from-blue-50 to-purple-50';
-
+  const bgColorClass ='from-amber-50 to-green-200'
   return (
-    <div className="relative">
-      <div className={`bg-gradient-to-r ${bgColorClass} py-16 px-4 transition-all duration-500`}>
+    <div className="relative ">
+      <div className={`bg-gradient-to-r ${bgColorClass} py-32 px-4 transition-all duration-500`}>
         <div className="max-w-6xl mx-auto flex items-center relative">
           <div className="w-1/2 pr-8 z-10">
             <motion.h1 
