@@ -64,7 +64,6 @@ const Product = () => {
     customization_options: [],
   });
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [availableSubCategories, setAvailableSubCategories] = useState<string[]>([]);
 
   // Handle main category change
@@ -74,6 +73,7 @@ const Product = () => {
       category: category,
     }));
     setAvailableSubCategories(categoryMap[category] || []);
+    console.log(availableSubCategories)
   };
 
   // Handle feature changes
@@ -142,18 +142,37 @@ const Product = () => {
   };
 
   // Handle image upload
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      // In a real application, you would upload to your server/cloud storage
-      // and get back a URL. This is just a placeholder.
-      setFormData((prev) => ({
-        ...prev,
-        img_url: URL.createObjectURL(file),
-      }));
+ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (file) {
+  
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "your_upload_preset"); // Add your preset
+
+    try {
+      const response = await fetch("https://api.cloudinary.com/v1_1/your_cloud_name/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setFormData((prev) => ({
+          ...prev,
+          img_url: data.secure_url,  // Cloudinary returns secure_url
+        }));
+      } else {
+        console.error("Upload failed", data.error);
+      }
+    } catch (error) {
+      console.error("Error uploading image", error);
     }
-  };
+  }
+};
+
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
