@@ -201,7 +201,7 @@ const Product = () => {
   return (
     <div className="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow-lg">
       <div className="mb-6 flex items-center space-x-2">
-        <Package className="text-emerald-600" size={24} />
+        <Package className="text-green-600" size={24} />
         <h2 className="text-2xl font-bold text-gray-800">Add New Product</h2>
       </div>
 
@@ -214,7 +214,7 @@ const Product = () => {
               type="text"
               value={formData.name}
               onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-              className="w-full rounded-md border border-gray-300 p-2 focus:border-emerald-500 focus:ring-emerald-500"
+              className="w-full rounded-md border border-gray-300 p-2 focus:border-green-500 focus:ring-green-500"
               required
             />
           </div>
@@ -225,7 +225,7 @@ const Product = () => {
               type="number"
               value={formData.price}
               onChange={(e) => setFormData((prev) => ({ ...prev, price: Number(e.target.value) }))}
-              className="w-full rounded-md border border-gray-300 p-2 focus:border-emerald-500 focus:ring-emerald-500"
+              className="w-full rounded-md border border-gray-300 p-2 focus:border-green-500 focus:ring-green-500"
               required
             />
           </div>
@@ -238,7 +238,7 @@ const Product = () => {
             value={formData.description}
             onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
             rows={4}
-            className="w-full rounded-md border border-gray-300 p-2 focus:border-emerald-500 focus:ring-emerald-500"
+            className="w-full rounded-md border border-gray-300 p-2 focus:border-green-500 focus:ring-green-500"
             required
           />
         </div>
@@ -277,7 +277,7 @@ const Product = () => {
           />
           <label
             htmlFor="image-upload"
-            className="cursor-pointer rounded-md bg-emerald-50 px-4 py-2 text-emerald-600 hover:bg-emerald-100"
+            className="cursor-pointer rounded-md bg-green-50 px-4 py-2 text-green-600 hover:bg-green-100"
           >
             Choose Image
           </label>
@@ -296,7 +296,7 @@ const Product = () => {
             <select
               value={formData.category}
               onChange={(e) => handleCategoryChange(e.target.value as CategoryKey)}
-              className="w-full rounded-md border border-gray-300 p-2 focus:border-emerald-500 focus:ring-emerald-500"
+              className="w-full rounded-md border border-gray-300 p-2 focus:border-green-500 focus:ring-green-500"
               required
             >
               <option value="">Select Category</option>
@@ -316,7 +316,7 @@ const Product = () => {
             <button
               type="button"
               onClick={addFeature}
-              className="flex items-center space-x-1 text-emerald-600 hover:text-emerald-700"
+              className="flex items-center space-x-1 text-green-600 hover:text-green-700"
             >
               <Plus size={16} />
               <span>Add Feature</span>
@@ -402,7 +402,7 @@ const Product = () => {
               <button
                 type="button"
                 onClick={addCustomizationOption}
-                className="flex items-center space-x-1 text-emerald-600 hover:text-emerald-700"
+                className="flex items-center space-x-1 text-green-600 hover:text-green-700"
               >
                 <Plus size={16} />
                 <span>Add Option</span>
@@ -579,7 +579,7 @@ const Product = () => {
             type="checkbox"
             checked={formData.is_active}
             onChange={(e) => setFormData((prev) => ({ ...prev, is_active: e.target.checked }))}
-            className="rounded text-emerald-600"
+            className="rounded text-green-600"
           />
           <label className="text-sm text-gray-700">Make product active and visible in store</label>
         </div>
@@ -588,7 +588,7 @@ const Product = () => {
         <div className="flex justify-end pt-6">
           <button
             type="submit"
-            className="flex items-center space-x-2 rounded-lg bg-emerald-600 px-6 py-2 text-white transition-colors duration-200 hover:bg-emerald-700"
+            className="flex items-center space-x-2 rounded-lg bg-green-600 px-6 py-2 text-white transition-colors duration-200 hover:bg-green-700"
           >
             <Package size={20} />
             <span>Add Product</span>
