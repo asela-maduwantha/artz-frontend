@@ -36,6 +36,7 @@ type Product = {
   customization_options: CustomizationOption[];
 };
 
+
 // Customization Panel Component
 const CustomizationPanel: React.FC<{
   options: CustomizationOption[];
