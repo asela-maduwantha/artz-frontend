@@ -21,7 +21,7 @@ import AdminOrdersPage from '../pages/AdminOrdersPage';
 
 // Create a ProtectedRoute component for authentication
 const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('token'); // Replace with your auth logic
+  const isAuthenticated = localStorage.getItem('token'); 
   
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
