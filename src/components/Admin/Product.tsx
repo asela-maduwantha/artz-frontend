@@ -152,10 +152,10 @@ const Product = () => {
       
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", "your_upload_preset");
+      formData.append("upload_preset", "Artztall_images");
 
       try {
-        const response = await fetch("https://api.cloudinary.com/v1_1/your_cloud_name/upload", {
+        const response = await fetch("https://api.cloudinary.com/v1_1/dgejkf0e1/upload", {
           method: "POST",
           body: formData,
         });

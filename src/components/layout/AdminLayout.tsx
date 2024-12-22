@@ -11,7 +11,8 @@ import {
   X, 
   ShoppingCart,
   Users,
-  PercentCircle
+  PercentCircle,
+  WalletCards
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -57,6 +58,7 @@ const AdminLayout = () => {
     { title: 'Orders', path: '/admin/orders', icon: ShoppingCart },
     { title: 'Customers', path: '/admin/customers', icon: Users },
     { title: 'Discounts', path: '/admin/discounts', icon: PercentCircle },
+    { title: 'Payments', path: '/admin/payments', icon: WalletCards },
     { title: 'Settings', path: '/admin/profile-settings', icon: Settings },
   ];
 

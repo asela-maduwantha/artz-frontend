@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { productService } from '../../services/api/productservice';
 
 interface Product {
@@ -72,8 +72,8 @@ const FeaturedProducts: React.FC = () => {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <span className="text-lg font-bold">LKR {product.price.toLocaleString()}</span>
                 <button className="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition flex items-center justify-center">
-                  <Heart className="inline mr-2" size={20} />
-                  <span>Add to Wishlist</span>
+                  <ShoppingBag className="inline mr-2" size={20} />
+                  <span>Buy Product</span>
                 </button>
               </div>
             </div>
