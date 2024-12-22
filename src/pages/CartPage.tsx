@@ -1,8 +1,9 @@
 import { Minus, Plus, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { cartService } from '../services/api/cartservice';
+import { paymentService } from '../services/api/paymentservice';
 
-// Extended interface to match API response
 interface Product {
   id: number;
   name: string;
@@ -26,10 +27,17 @@ interface CartResponse {
   items: CartItemResponse[];
 }
 
+interface PaymentIntentResponse {
+  clientSecret: string;
+  payment_intent_id: string;
+}
+
 const CartPage = () => {
   const [cart, setCart] = useState<CartResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [processingPayment, setProcessingPayment] = useState(false);
+  const navigate = useNavigate();
 
   // Assuming we have the user ID from context or props
   const userId = 1;
@@ -77,6 +85,50 @@ const CartPage = () => {
       await fetchCart();
     } catch (err) {
       setError('Failed to remove item');
+    }
+  };
+
+  const handleProceedToCheckout = async () => {
+    if (!cart || processingPayment) return;
+
+    try {
+      setProcessingPayment(true);
+      setError(null);
+
+      const orderItems = cart.items.map(item => ({
+        product_id: item.product.id,
+        quantity: item.quantity,
+        customizations: Object.values(item.customization_data || {}).map(customization => ({
+          customization_option_id: customization.id,
+          selected_value: customization.value
+        }))
+      }));
+
+
+      
+      const total = cart.items.reduce((sum, item) => 
+        sum + (item.product.price * item.quantity), 0);
+
+      const paymentIntent = {
+        amount: Math.round(total * 100), 
+        user_id: userId,
+        order_items: orderItems
+      };
+
+      const response: PaymentIntentResponse = await paymentService.createPaymentIntent(paymentIntent);
+      
+      // Navigate to checkout page with payment intent data
+      navigate('/artbyusha/checkout', {
+        state: {
+          clientSecret: response.clientSecret,
+          paymentIntentId: response.payment_intent_id,
+          amount: total
+        }
+      });
+    } catch (err) {
+      setError('Failed to initialize checkout process');
+    } finally {
+      setProcessingPayment(false);
     }
   };
 
@@ -162,8 +214,16 @@ const CartPage = () => {
             <span className="font-bold text-green-500">${total.toFixed(2)}</span>
           </div>
           
-          <button className="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors">
-            Proceed to Checkout
+          <button 
+            className={`w-full bg-green-500 text-white py-3 rounded-lg transition-colors ${
+              processingPayment 
+                ? 'opacity-50 cursor-not-allowed' 
+                : 'hover:bg-green-600'
+            }`}
+            onClick={handleProceedToCheckout}
+            disabled={processingPayment}
+          >
+            {processingPayment ? 'Processing...' : 'Proceed to Checkout'}
           </button>
         </div>
       </div>

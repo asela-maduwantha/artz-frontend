@@ -16,6 +16,7 @@ import CustomerLayout from '../components/layout/Customerlayout';
 import CartPage from '../pages/CartPage';
 import WishlistPage from '../pages/WishlistPage';
 import OrdersPage from '../pages/OrdersPage';
+import CheckoutPage from '../pages/CheckoutPage';
 
 
 
@@ -32,6 +33,7 @@ const AppRoutes: React.FC = () => {
             <Route path="/contact" element={<ContactsPage/>} />
             <Route path="/about" element={<AboutPage/>} />
             <Route path="/shop" element={<ProductPage/>} />
+            <Route path="/artbyusha/checkout" element={<CheckoutPage/>} />
            
             <Route path="/admin" element={<AdminLayout/>} >
             <Route path="product" element={< Product/>} />
