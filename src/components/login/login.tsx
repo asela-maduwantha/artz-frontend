@@ -5,8 +5,11 @@ import {
 } from "lucide-react";
 import { authService } from '../../services/api/authservice';
 import { toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
 
 const LoginForm: React.FC = () => {
+
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -66,8 +69,16 @@ const LoginForm: React.FC = () => {
             email: formData.email,
             password: formData.password
           });
+
+          const userRole = localStorage.getItem('userRole');
+          if (userRole === 'ADMIN') {
+            navigate('/admin');
+          } else {
+            navigate('/customer');
+          }
+
           setSubmissionStatus('success');
-          // Redirect or handle successful login
+          
         } catch (error: any) {
           setSubmissionStatus('error');
           toast.error(error.response?.data?.message || 'Login failed');
