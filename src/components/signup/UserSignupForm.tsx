@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import {toast } from 'react-toastify'
-import { authService } from "../../services/api/authservice";
+import { toast } from 'react-toastify';
+import { authService, SignupData } from "../../services/api/authservice";
+
 
 import { 
   User, Mail, Lock, Phone, UserPlus, Eye, EyeOff,
@@ -16,8 +18,6 @@ interface FormData {
   phone: string;
   termsAccepted: boolean;
 }
-
-
 
 interface ValidationRules {
   [key: string]: (value: string, formData?: FormData) => string;
@@ -65,6 +65,7 @@ const SuccessModal: React.FC<{
 };
 
 const SignupFormWithImage: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
     email: "",
@@ -155,22 +156,37 @@ const SignupFormWithImage: React.FC = () => {
 
       if (Object.values(newErrors).every((error) => error === "")) {
         try {
-          const userData = {
-            fullName: formData.fullName,
+          // Split full name into first and last name
+          const [firstname, ...lastnameParts] = formData.fullName.trim().split(" ");
+          const lastname = lastnameParts.join(" ");
+
+          const userData: SignupData = {
+            firstname,
+            lastname,
             email: formData.email,
             password: formData.password,
-            phone: formData.phone
+            phoneNumber: formData.phone
           };
 
-          await authService.signup(userData);
-          setShowSuccessModal(true);
+          const response = await authService.signup(userData);
+
+          console.log(response)
+          
+          // Navigate based on user role after successful signup
+          const userRole = localStorage.getItem('userRole');
+          if (userRole === 'ADMIN') {
+            navigate('/admin');
+          } else {
+            navigate('/customer');
+          }
+          
         } catch (error: any) {
           toast.error(error.response?.data?.message || 'Registration failed');
         }
       }
       setIsSubmitting(false);
     },
-    [formData, validationRules]
+    [formData, validationRules, navigate]
   );
 
   const togglePasswordVisibility = (field: 'password' | 'confirmPassword') => {
@@ -241,7 +257,7 @@ const SignupFormWithImage: React.FC = () => {
   };
 
   const handleSignIn = () => {
-    window.location.href = '/login';
+    navigate('/login');
   };
 
   return (
