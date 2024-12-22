@@ -1,7 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-
+// Import your existing components
 import HomePage from '../pages/Homepage';
 import LoginForm from '../components/login/login';
 import SignupFormWithImage from '../components/signup/UserSignupForm';
@@ -17,39 +17,77 @@ import CartPage from '../pages/CartPage';
 import WishlistPage from '../pages/WishlistPage';
 import OrdersPage from '../pages/OrdersPage';
 import CheckoutPage from '../pages/CheckoutPage';
+import AdminOrdersPage from '../pages/AdminOrdersPage';
 
+// Create a ProtectedRoute component for authentication
+const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
+  const isAuthenticated = localStorage.getItem('token'); // Replace with your auth logic
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
+  return children;
+};
 
 const AppRoutes: React.FC = () => {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
-       
-    
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginForm/>} />
-            <Route path="/signup" element={<SignupFormWithImage/>} />
-            <Route path="/contact" element={<ContactsPage/>} />
-            <Route path="/about" element={<AboutPage/>} />
-            <Route path="/shop" element={<ProductPage/>} />
-            <Route path="/artbyusha/checkout" element={<CheckoutPage/>} />
-           
-            <Route path="/admin" element={<AdminLayout/>} >
-            <Route path="product" element={< Product/>} />
-            <Route path="allproduct" element={< ProductDisplay/>} />
-            <Route path="discounts" element={<DiscountManagement/>} />
-            </Route>
-            <Route path="/customer" element={<CustomerLayout/>} >
-            <Route path="cart" element={< CartPage/>} />
-            <Route path="wishlist" element={< WishlistPage/>} />
-            <Route path="orders" element={<OrdersPage/>} />
-            </Route>
-          
-           
-          </Routes>
+      <Routes>
+        {/* Public routes with MainLayout */}
         
-      </div>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/signup" element={<SignupFormWithImage />} />
+          <Route path="/contact" element={<ContactsPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/shop" element={<ProductPage />} />
+
+
+        {/* Protected Admin routes */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/admin/product" replace />} />
+          <Route path="product" element={<Product />} />
+          <Route path="allproduct" element={<ProductDisplay />} />
+          <Route path="discounts" element={<DiscountManagement />} />
+          <Route path="orders" element={<AdminOrdersPage />} />
+        </Route>
+
+        {/* Protected Customer routes */}
+        <Route
+          path="/customer"
+          element={
+            <ProtectedRoute>
+              <CustomerLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/customer/orders" replace />} />
+          <Route path="cart" element={<CartPage />} />
+          <Route path="wishlist" element={<WishlistPage />} />
+          <Route path="orders" element={<OrdersPage />} />
+        </Route>
+
+        {/* Checkout route with protection */}
+        <Route
+          path="/artbyusha/checkout"
+          element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Catch all route for 404 */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </Router>
   );
 };

@@ -1,0 +1,2 @@
+# Create a file named _redirects in your public folder
+/* /index.html 200
