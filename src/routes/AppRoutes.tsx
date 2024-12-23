@@ -21,6 +21,7 @@ import AdminOrdersPage from '../pages/AdminOrdersPage';
 import PaymentDashboard from '../pages/PaymentDashboard';
 import AdminDashboard from '../pages/AdminDashboard';
 import UserManagement from '../pages/UserManagement';
+import UserProfile from '../pages/UserProfile';
 
 // Create a ProtectedRoute component for authentication
 const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
@@ -64,6 +65,7 @@ const AppRoutes: React.FC = () => {
           <Route path="discounts" element={<DiscountManagement />} />
           <Route path="orders" element={<AdminOrdersPage />} />
           <Route path="payments" element={<PaymentDashboard />} />
+          <Route path="profile" element={<UserProfile />} />
         </Route>
 
         {/* Protected Customer routes */}
@@ -80,6 +82,7 @@ const AppRoutes: React.FC = () => {
           <Route path="wishlist" element={<WishlistPage />} />
           <Route path="orders" element={<OrdersPage />} />
           <Route path="shop" element={<ProductPage />} />
+          <Route path="profile" element={<UserProfile />} />
         </Route>
 
         {/* Checkout route with protection */}
