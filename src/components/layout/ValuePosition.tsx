@@ -1,5 +1,6 @@
 import React from 'react';
 import { Leaf, Heart, ShoppingCart } from 'lucide-react';
+import ValuePropositionSEO from '../ValuePropositionSEO';
 
 
 
@@ -23,6 +24,8 @@ const ValueProposition: React.FC = () => {
   ];
 
   return (
+   <>
+     <ValuePropositionSEO />
     <div className="bg-green-100 py-12 px-4 sm:py-16">
       <div className="max-w-6xl mx-auto text-center">
         <h2 className="text-2xl sm:text-3xl font-bold mb-8">Why Choose Artz by Usha?</h2>
@@ -39,6 +42,7 @@ const ValueProposition: React.FC = () => {
         </div>
       </div>
     </div>
+   </>
   );
 };
 
