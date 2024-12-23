@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Users, ChevronLeft, ChevronRight, Search, Mail, User, MapPin, Calendar } from 'lucide-react';
+import { Users, ChevronLeft, ChevronRight, Search, Mail, User, MapPin, Calendar, Phone } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import api from '../services/api/axiosconfig';
 
@@ -9,6 +9,7 @@ interface User {
   firstName: string;
   lastName: string;
   email: string;
+  phoneNumber: string;  // Added phone number field
   role: string;
   address: string;
   created_at: string;
@@ -42,6 +43,7 @@ const UserManagement: FC = () => {
     user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -101,7 +103,10 @@ const UserManagement: FC = () => {
                   User
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contact
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Phone
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Role
@@ -136,6 +141,12 @@ const UserManagement: FC = () => {
                     <div className="flex items-center text-sm text-gray-900">
                       <Mail className="h-4 w-4 text-gray-400 mr-2" />
                       {user.email}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center text-sm text-gray-900">
+                      <Phone className="h-4 w-4 text-gray-400 mr-2" />
+                      {user.phoneNumber}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
