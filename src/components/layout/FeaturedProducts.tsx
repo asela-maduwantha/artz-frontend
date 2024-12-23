@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ShoppingBag } from "lucide-react";
 import { productService } from '../../services/api/productservice';
 import { SEO } from '../SEO';
-import { useProductSchema } from '../hooks/seoHooks';
+
 
 interface Product {
   id: number;
@@ -17,6 +17,29 @@ const FeaturedProducts: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Generate schema for products
+  const generateProductsSchema = (products: Product[]) => ({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: products.map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.name,
+        image: product.img_url,
+        description: product.description,
+        offers: {
+          "@type": "Offer",
+          price: product.price,
+          priceCurrency: "LKR",
+          availability: product.inStock ? "InStock" : "OutOfStock"
+        }
+      }
+    }))
+  });
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -33,70 +56,28 @@ const FeaturedProducts: React.FC = () => {
     fetchProducts();
   }, []);
 
-  // Generate schema for all featured products
-  const productsSchema = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    itemListElement: products.map((product, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      item: useProductSchema({
-        name: product.name,
-        image: product.img_url,
-        description: product.description,
-        price: product.price,
-        inStock: product.inStock ?? true,
-      })
-    }))
-  };
-
   const pageTitle = "Featured Handcrafted Gifts | Shop Unique Artisan Products";
   const pageDescription = "Discover our handpicked selection of unique, handcrafted gifts. Each piece is carefully created with attention to detail and artistic excellence. Shop now for exclusive artisan products.";
   const keywords = "handcrafted gifts, artisan products, unique gifts, handmade items, featured products, ArtZbyUsha";
 
-  if (loading) {
-    return (
-      <div className="py-12 px-4 sm:py-16 bg-green-100">
-        <SEO 
-          title={pageTitle}
-          description={pageDescription}
-          keywords={keywords}
-          pageType="product"
-          schema={productsSchema}
-        />
+  const renderContent = () => {
+    if (loading) {
+      return (
         <div className="max-w-6xl mx-auto text-center">
           Loading...
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (error) {
-    return (
-      <div className="py-12 px-4 sm:py-16 bg-green-100">
-        <SEO 
-          title={pageTitle}
-          description={pageDescription}
-          keywords={keywords}
-          pageType="product"
-          schema={productsSchema}
-        />
+    if (error) {
+      return (
         <div className="max-w-6xl mx-auto text-center text-red-600">
           {error}
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  return (
-    <div className="py-12 px-4 sm:py-16 bg-green-100">
-      <SEO 
-        title={pageTitle}
-        description={pageDescription}
-        keywords={keywords}
-        pageType="product"
-        schema={productsSchema}
-      />
+    return (
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">Our Featured Gifts</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
@@ -132,6 +113,19 @@ const FeaturedProducts: React.FC = () => {
           ))}
         </div>
       </div>
+    );
+  };
+
+  return (
+    <div className="py-12 px-4 sm:py-16 bg-green-100">
+      <SEO 
+        title={pageTitle}
+        description={pageDescription}
+        keywords={keywords}
+        pageType="product"
+        schema={products.length > 0 ? generateProductsSchema(products) : undefined}
+      />
+      {renderContent()}
     </div>
   );
 };
