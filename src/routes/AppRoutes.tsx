@@ -42,7 +42,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/signup" element={<SignupFormWithImage />} />
           <Route path="/contact" element={<ContactsPage />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/shop" element={<ProductPage />} />
+         
 
 
         {/* Protected Admin routes */}
@@ -71,10 +71,11 @@ const AppRoutes: React.FC = () => {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/customer/orders" replace />} />
+          <Route index element={<Navigate to="/customer/shop" replace />} />
           <Route path="cart" element={<CartPage />} />
           <Route path="wishlist" element={<WishlistPage />} />
           <Route path="orders" element={<OrdersPage />} />
+          <Route path="shop" element={<ProductPage />} />
         </Route>
 
         {/* Checkout route with protection */}

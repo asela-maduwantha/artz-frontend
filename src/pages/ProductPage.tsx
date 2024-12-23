@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Header from "../components/layout/Header";
 import ProductCategories from "../components/layout/ProductCategories";
 import Card from "../components/common/Card";
 import ProductDetailsDialog from "../components/layout/ProductDialog";
 import { productService } from "../services/api/productservice";
+import { ShoppingBag } from "lucide-react";
 
 const ProductPage: React.FC = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -69,8 +69,11 @@ const ProductPage: React.FC = () => {
 
   return (
     <div>
-      <Header />
-      <div className="mt-5 pt-20 my-7">
+       <div className="flex items-center place-content-center gap-2 mb-8">
+        <ShoppingBag className="w-6 h-6 text-green-500" />
+        <h1 className="text-2xl font-bold">Explore Your Desires</h1>
+      </div>
+      <div className="mt-5 my-7">
         <ProductCategories
           onCategoryChange={(category) => setSelectedCategory(category)}
         />

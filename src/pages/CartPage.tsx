@@ -39,8 +39,8 @@ const CartPage = () => {
   const [processingPayment, setProcessingPayment] = useState(false);
   const navigate = useNavigate();
 
-  // Assuming we have the user ID from context or props
-  const userId = 1;
+
+  const userId: any = localStorage.getItem('userId');
 
   useEffect(() => {
     fetchCart();
