@@ -108,10 +108,10 @@ const CartPage = () => {
       
       const total = cart.items.reduce((sum, item) => 
         sum + (item.product.price * item.quantity), 0);
-
+      const userId = parseInt(localStorage.getItem('userId') || '0');
       const paymentIntent = {
         amount: Math.round(total * 100), 
-        user_id: userId,
+        user_id:userId,
         order_items: orderItems
       };
 
