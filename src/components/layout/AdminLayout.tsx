@@ -59,7 +59,7 @@ const AdminLayout = () => {
     { title: 'Customers', path: '/admin/users', icon: Users },
     { title: 'Discounts', path: '/admin/discounts', icon: PercentCircle },
     { title: 'Payments', path: '/admin/payments', icon: WalletCards },
-    { title: 'Settings', path: '/admin/profile-settings', icon: Settings },
+    { title: 'Settings', path: '/admin/profile', icon: Settings },
   ];
 
   const isActiveRoute = (path: string) => {
