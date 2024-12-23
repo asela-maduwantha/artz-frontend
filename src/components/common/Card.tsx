@@ -63,7 +63,8 @@ const Card: React.FC<CardProps> = ({ product, onClick }) => {
 
       {/* Heart icon for wishlist at bottom right */}
       <div className="absolute bottom-4 right-4">
-        <Heart />
+      <Heart productId={product.id} />
+
       </div>
     </motion.div>
   );

@@ -45,8 +45,8 @@ const OrdersPage = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const userId = 1; // Replace with actual user ID from auth context
-      const response = await orderService.getOrdersByUser(userId);
+      const userId:any = localStorage.getItem('userId'); 
+      const response = await orderService.getOrdersByUser(parseInt(userId));
       setOrders(response);
     } catch (err) {
       setError('Failed to load orders. Please try again later.');

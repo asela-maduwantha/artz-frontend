@@ -2,8 +2,8 @@ import api from './axiosconfig';
 import { toast } from 'react-toastify';
 
 interface SignupData {
-  firstname: string;
-  lastname:string;
+  firstName: string;
+  lastName:string;
   email: string;
   password: string;
   phoneNumber?: string;

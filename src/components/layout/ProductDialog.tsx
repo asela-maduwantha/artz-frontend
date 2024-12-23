@@ -111,7 +111,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
         setAddToCartStatus('idle');
 
         try {
-            const userId = 1;
+            const userId: any = localStorage.getItem('userId');
             if (!userId) {
                 throw new Error('User not logged in');
             }
