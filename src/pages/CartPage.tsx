@@ -108,10 +108,10 @@ const CartPage = () => {
       
       const total = cart.items.reduce((sum, item) => 
         sum + (item.product.price * item.quantity), 0);
-
+      const userId = parseInt(localStorage.getItem('userId') || '0');
       const paymentIntent = {
         amount: Math.round(total * 100), 
-        user_id: userId,
+        user_id:userId,
         order_items: orderItems
       };
 
@@ -167,7 +167,7 @@ const CartPage = () => {
             
             <div className="flex-grow ml-6">
               <h3 className="font-semibold text-lg">{item.product.name}</h3>
-              <p className="text-green-500 font-medium">${item.product.price}</p>
+              <p className="text-green-500 font-medium">LKR {item.product.price}</p>
               
               {item.customization_data && (
                 <div className="mt-2 text-sm text-gray-600">
@@ -211,7 +211,7 @@ const CartPage = () => {
         <div className="p-6">
           <div className="flex justify-between mb-4">
             <span className="font-semibold">Total:</span>
-            <span className="font-bold text-green-500">${total.toFixed(2)}</span>
+            <span className="font-bold text-green-500">LKR {total.toFixed(2)}</span>
           </div>
           
           <button 
