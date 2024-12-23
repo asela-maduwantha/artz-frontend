@@ -93,7 +93,7 @@ const UserProfile = () => {
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         >
-          <User className="w-8 h-8 text-blue-500" />
+          <User className="w-8 h-8 text-green-500" />
         </motion.div>
       </div>
     );
@@ -112,7 +112,7 @@ const UserProfile = () => {
     >
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         {/* Header Section */}
-        <div className="relative h-32 bg-gradient-to-r from-blue-500 to-purple-500">
+        <div className="relative h-32 bg-gradient-to-r from-green-500 to-blue-500">
           <motion.div 
             className="absolute -bottom-16 left-1/2 transform -translate-x-1/2"
             whileHover={{ scale: 1.05 }}
@@ -184,7 +184,7 @@ const UserProfile = () => {
                   {profile.firstName} {profile.lastName}
                 </motion.h2>
                 <motion.span 
-                  className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm mt-2"
+                  className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm mt-2"
                   variants={itemVariants}
                 >
                   {profile.role}
@@ -226,7 +226,7 @@ const UserProfile = () => {
               </motion.div>
 
               <motion.button
-                className="flex items-center space-x-2 mx-auto px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                className="flex items-center space-x-2 mx-auto px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
                 onClick={() => setIsEditing(true)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
