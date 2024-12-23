@@ -281,7 +281,7 @@ const OrdersPage = () => {
                           <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
                           <p className="text-sm text-gray-500">${item.product.price} each</p>
                         </div>
-                        <p className="font-medium">${item.quantity * item.product.price}</p>
+                        <p className="font-medium">LKR {item.quantity * item.product.price}</p>
                       </div>
                     ))}
                   </div>
@@ -290,12 +290,12 @@ const OrdersPage = () => {
                     {order.discount_amount > 0 && (
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Discount</span>
-                        <span className="text-green-500">-${order.discount_amount}</span>
+                        <span className="text-green-500">-LKR{order.discount_amount}</span>
                       </div>
                     )}
                     <div className="flex justify-between items-center">
                       <span className="font-semibold">Total</span>
-                      <span className="font-bold text-green-500">${order.total_amount}</span>
+                      <span className="font-bold text-green-500">LKR{order.total_amount}</span>
                     </div>
                   </div>
 
