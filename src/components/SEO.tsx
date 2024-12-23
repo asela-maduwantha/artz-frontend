@@ -12,7 +12,7 @@ export const SEO = ({
   title, 
   description, 
   keywords = "handcraft, art, handmade items, crafts, ArtZbyUsha", 
-  image = "https://artzbyusha.netlify.app/your-default-image.jpg",
+  image = "https://artzbyusha.netlify.app/.jpg",
   canonicalUrl = "https://artzbyusha.netlify.app"
 }: SEOProps) => {
   return (
