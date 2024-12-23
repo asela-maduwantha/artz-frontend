@@ -56,7 +56,7 @@ const AdminLayout = () => {
     { title: 'Dashboard', path: '/admin/dashboard', icon: BarChart3 },
     { title: 'Products', path: '/admin/product', icon: Package },
     { title: 'Orders', path: '/admin/orders', icon: ShoppingCart },
-    { title: 'Customers', path: '/admin/customers', icon: Users },
+    { title: 'Customers', path: '/admin/users', icon: Users },
     { title: 'Discounts', path: '/admin/discounts', icon: PercentCircle },
     { title: 'Payments', path: '/admin/payments', icon: WalletCards },
     { title: 'Settings', path: '/admin/profile-settings', icon: Settings },
